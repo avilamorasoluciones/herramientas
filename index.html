@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avila Mora Soluciones - Herramientas</title>
+    <meta name="description" content="Ecosistema de herramientas PDF de alta seguridad y rendimiento por Avila Mora Soluciones.">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Librería PDF-lib -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+    <style>
+        /* =========================================
+           VARIABLES ESTÉTICA FUTURISTA AMS
+           ========================================= */
+        :root {
+            --bg-deep: #050810;
+            --bg-glass: rgba(13, 17, 28, 0.6);
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --cyan: #00F0FF;
+            --cyan-glow: rgba(0, 240, 255, 0.4);
+            --purple: #8A2BE2;
+            --purple-glow: rgba(138, 43, 226, 0.4);
+            --border-glass: rgba(255, 255, 255, 0.05);
+            --border-hover: rgba(0, 240, 255, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.05), transparent 25%);
+        }
+
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; }
+        .text-muted { color: var(--text-muted) !important; }
+        
+        /* NAVBAR */
+        .navbar {
+            background: rgba(5, 8, 16, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+        }
+        .brand-logo {
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #000 !important;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* HERO */
+        .hero-section { padding: 80px 0 60px; text-align: center; }
+        .text-gradient {
+            background: linear-gradient(90deg, var(--cyan), #B026FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--purple-glow);
+        }
+
+        /* BADGES & TAGS */
+        .badge-core {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--cyan);
+            border: 1px solid var(--cyan-glow);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* TARJETAS DE HERRAMIENTAS */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding-bottom: 80px;
+        }
+
+        .tool-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--border-hover);
+            box-shadow: 0 15px 35px rgba(0, 240, 255, 0.1), inset 0 0 20px rgba(255,255,255,0.02);
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+        }
+
+        .icon-box.cyan { color: var(--cyan); box-shadow: 0 0 20px var(--cyan-glow); }
+        .icon-box.purple { color: #B026FF; box-shadow: 0 0 20px var(--purple-glow); }
+        .icon-box.green { color: #10B981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        .icon-box.orange { color: #F59E0B; box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+        .icon-box.pink { color: #EC4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.3); }
+        .icon-box.blue { color: #3B82F6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        .icon-box.yellow { color: #EAB308; box-shadow: 0 0 20px rgba(234, 179, 8, 0.3); }
+
+        /* INPUTS Y DRAG & DROP */
+        .drop-zone {
+            background: rgba(0,0,0,0.3);
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--cyan);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .drop-zone input[type="file"] { display: none; }
+
+        .form-control, .form-select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: rgba(0,0,0,0.5);
+            border-color: var(--cyan);
+            color: var(--text-main);
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+
+        .btn-ams {
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #000 !important;
+            border: none;
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: auto;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-ams:hover {
+            box-shadow: 0 0 20px var(--cyan-glow);
+            transform: scale(1.02);
+        }
+
+        .btn-ams:disabled {
+            background: #1E293B;
+            color: #64748B !important;
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .status-msg { font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; font-weight: 500; }
+        
+        footer { border-top: 1px solid var(--border-glass); background: rgba(5,8,16,0.9); }
+    </style>
+</head>
+<body>
+
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg sticky-top py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="https://avilamorasoluciones.github.io/ams" target="_blank">
+                <span class="brand-logo">Herramientas PDF/IMG</span> 
+                <span class="fw-bold fs-5 d-none d-sm-inline text-white" style="font-family: 'Space Grotesk', sans-serif;">Avila Mora Soluciones</span>
+            </a>
+            <a href="https://avilamorasoluciones.github.io/ams" class="btn btn-outline-light btn-sm rounded-pill px-4" style="font-size: 0.8rem; font-weight: 600;">
+                <i class="fa-solid fa-rocket me-1"></i> Explorar Soluciones
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero-section container">
+        <div class="mb-4"><span class="badge-core"><i class="fa-solid fa-microchip me-2"></i> Operación 100% Segura</span></div>
+        <h1 class="display-3 fw-bold mb-4">El Futuro de los <span class="text-gradient">Documentos</span></h1>
+        <p class="lead text-muted mx-auto mb-5" style="max-width: 800px; font-size: 1.1rem;">
+            Diseñado para quienes que exigen privacidad total. Ningún archivo se sube a servidores externos, todo el cálculo criptográfico y de edición se realiza en el núcleo de tu navegador.
+        </p>
+    </section>
+
+    <!-- Cuadrícula Principal (8 Herramientas 100% Funcionales) -->
+    <section class="container">
+        <div class="tool-grid">
+            <!-- 1. Unir PDFs -->
+            <div class="tool-card">
+                <div class="icon-box cyan"><i class="fa-solid fa-layer-group"></i></div>
+                <h3 class="h4 fw-bold mb-2">Unir PDF</h3>
+                <p class="text-muted small mb-4">Ensambla múltiples documentos en una sola arquitectura PDF de forma instantánea.</p>
+                <label class="drop-zone">
+                    <i class="fa-solid fa-cloud-arrow-up fs-4 mb-2 text-cyan"></i>
+                    <div class="small fw-bold">Soltar archivos aquí</div>
+                    <div class="small text-muted mt-1" id="merge-file-count">Ningún archivo</div>
+                    <input type="file" id="merge-input" accept="application/pdf" multiple>
+                </label>
+                <button class="btn btn-ams" id="btn-merge" disabled>Procesar Unión</button>
+                <div class="status-msg text-success" id="merge-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 2. Extraer Páginas -->
+            <div class="tool-card">
+                <div class="icon-box purple"><i class="fa-solid fa-scissors"></i></div>
+                <h3 class="h4 fw-bold mb-2">Dividir Páginas PDF</h3>
+                <p class="text-muted small mb-4">Aísla y extrae segmentos específicos de datos de un documento maestro.</p>
+                <label class="drop-zone">
+                    <i class="fa-solid fa-file-pdf fs-4 mb-2 text-purple"></i>
+                    <div class="small text-truncate px-2" id="split-file-name">Seleccionar PDF</div>
+                    <input type="file" id="split-input" accept="application/pdf">
+                </label>
+                <input type="text" class="form-control form-control-sm text-center" id="split-ranges" placeholder="Rangos (Ej: 1, 3, 5-8)" disabled>
+                <button class="btn btn-ams" id="btn-split" disabled>Extraer Nodos</button>
+                <div class="status-msg text-success" id="split-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 3. Imagen a PDF -->
+            <div class="tool-card">
+                <div class="icon-box green"><i class="fa-regular fa-image"></i></div>
+                <h3 class="h4 fw-bold mb-2">Imagen a PDF</h3>
+                <p class="text-muted small mb-4">Convierte fotografías o escaneos (JPG/PNG) en documentos PDF estandarizados.</p>
+                <label class="drop-zone">
+                    <i class="fa-regular fa-images fs-4 mb-2 text-success"></i>
+                    <div class="small fw-bold">Soltar imágenes (JPG/PNG)</div>
+                    <div class="small text-muted mt-1" id="img-file-count">Ningún archivo</div>
+                    <input type="file" id="img-input" accept="image/jpeg, image/png" multiple>
+                </label>
+                <button class="btn btn-ams" id="btn-img" disabled>Generar PDF</button>
+                <div class="status-msg text-success" id="img-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 4. Eliminar Páginas -->
+            <div class="tool-card">
+                <div class="icon-box pink"><i class="fa-solid fa-trash-can-arrow-up"></i></div>
+                <h3 class="h4 fw-bold mb-2">Eliminar Páginas</h3>
+                <p class="text-muted small mb-4">Elimina hojas defectuosas o confidenciales antes de compartir el documento.</p>
+                <label class="drop-zone">
+                    <i class="fa-solid fa-file-pdf fs-4 mb-2" style="color: #EC4899;"></i>
+                    <div class="small text-truncate px-2" id="remove-file-name">Seleccionar PDF</div>
+                    <input type="file" id="remove-input" accept="application/pdf">
+                </label>
+                <input type="text" class="form-control form-control-sm text-center" id="remove-ranges" placeholder="A purgar (Ej: 2, 4-6)" disabled>
+                <button class="btn btn-ams" id="btn-remove" disabled>Ejecutar Purga</button>
+                <div class="status-msg text-success" id="remove-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 5. Marca de Agua -->
+            <div class="tool-card">
+                <div class="icon-box orange"><i class="fa-solid fa-fingerprint"></i></div>
+                <h3 class="h4 fw-bold mb-2">Sello de Seguridad</h3>
+                <p class="text-muted small mb-4">Aplica marcas de agua vectoriales para protección de propiedad intelectual.</p>
+                <label class="drop-zone py-2">
+                    <i class="fa-solid fa-shield-halved fs-5 mb-1" style="color: #F59E0B;"></i>
+                    <div class="small text-truncate px-2" id="watermark-file-name">Seleccionar PDF</div>
+                    <input type="file" id="watermark-input" accept="application/pdf">
+                </label>
+                <input type="text" class="form-control form-control-sm text-center mb-2" id="watermark-text" placeholder="Texto (Ej: CONFIDENCIAL)" disabled>
+                <button class="btn btn-ams" id="btn-watermark" disabled>Aplicar Sello</button>
+                <div class="status-msg text-success" id="watermark-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 6. Rotar PDF -->
+            <div class="tool-card">
+                <div class="icon-box cyan"><i class="fa-solid fa-arrows-rotate"></i></div>
+                <h3 class="h4 fw-bold mb-2">Reorientar PDF</h3>
+                <p class="text-muted small mb-4">Corrige documentos escaneados alterando la matriz de rotación del archivo.</p>
+                <label class="drop-zone py-2">
+                    <i class="fa-solid fa-file-pdf fs-5 mb-1 text-cyan"></i>
+                    <div class="small text-truncate px-2" id="rotate-file-name">Seleccionar PDF</div>
+                    <input type="file" id="rotate-input" accept="application/pdf">
+                </label>
+                <select class="form-select form-select-sm text-center mb-2" id="rotate-angle" disabled>
+                    <option value="90">Rotar +90° (Derecha)</option>
+                    <option value="180">Rotar 180° (Invertir)</option>
+                    <option value="270">Rotar -90° (Izquierda)</option>
+                </select>
+                <button class="btn btn-ams" id="btn-rotate" disabled>Reorientar</button>
+                <div class="status-msg text-success" id="rotate-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 7. Limpiar Propiedades (Metadatos) -->
+            <div class="tool-card">
+                <div class="icon-box blue"><i class="fa-solid fa-id-card-clip"></i></div>
+                <h3 class="h4 fw-bold mb-2">Limpiar Propiedades</h3>
+                <p class="text-muted small mb-4">Elimina o reescribe el Título y Autor interno para ocultar el origen del archivo.</p>
+                <label class="drop-zone py-2">
+                    <i class="fa-solid fa-file-pdf fs-5 mb-1 text-primary"></i>
+                    <div class="small text-truncate px-2" id="meta-file-name">Seleccionar PDF</div>
+                    <input type="file" id="meta-input" accept="application/pdf">
+                </label>
+                <div class="d-flex gap-2 mb-2">
+                    <input type="text" class="form-control form-control-sm text-center m-0" id="meta-title" placeholder="Nuevo Título" disabled>
+                    <input type="text" class="form-control form-control-sm text-center m-0" id="meta-author" placeholder="Nuevo Autor" disabled>
+                </div>
+                <button class="btn btn-ams" id="btn-meta" disabled>Limpiar Datos</button>
+                <div class="status-msg text-success" id="meta-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 8. Numerar Páginas -->
+            <div class="tool-card">
+                <div class="icon-box yellow"><i class="fa-solid fa-list-ol"></i></div>
+                <h3 class="h4 fw-bold mb-2">Numerar Páginas</h3>
+                <p class="text-muted small mb-4">Agrega indicadores de página automáticos (Ej: 1 / 10) en la parte inferior del documento.</p>
+                <label class="drop-zone py-2">
+                    <i class="fa-solid fa-file-pdf fs-5 mb-1 text-warning"></i>
+                    <div class="small text-truncate px-2" id="number-file-name">Seleccionar PDF</div>
+                    <input type="file" id="number-input" accept="application/pdf">
+                </label>
+                <button class="btn btn-ams mt-auto" id="btn-number" disabled>Aplicar Numeración</button>
+                <div class="status-msg text-success" id="number-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer Promocional -->
+    <footer class="py-5 text-center">
+        <div class="container">
+            <h4 class="fw-bold mb-2" style="font-family: 'Space Grotesk', sans-serif;">Arquitectura Digital a Medida</h4>
+            <p class="text-muted mb-4 small">¿Necesitas automatizar procesos corporativos complejos para tu empresa?</p>
+            <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light rounded-pill px-4 btn-sm">
+                Desarrollemos tu Sistema <i class="fa-solid fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        const { PDFDocument, rgb, degrees } = PDFLib;
+
+        // --- SISTEMA DE DRAG AND DROP VISUAL ---
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            const input = zone.querySelector('input[type="file"]');
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+            ['dragleave', 'dragend'].forEach(type => zone.addEventListener(type, () => zone.classList.remove('dragover')));
+            zone.addEventListener('drop', e => {
+                e.preventDefault(); zone.classList.remove('dragover');
+                if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; input.dispatchEvent(new Event('change')); }
+            });
+        });
+
+        // Funciones Auxiliares
+        function parseRanges(str) {
+            const pages = new Set();
+            for (let part of str.split(',')) {
+                part = part.trim();
+                if (part.includes('-')) {
+                    const [start, end] = part.split('-').map(Number);
+                    if (start && end && start <= end) for (let i = start; i <= end; i++) pages.add(i);
+                } else if (Number(part)) pages.add(Number(part));
+            }
+            return Array.from(pages).sort((a, b) => a - b);
+        }
+        function downloadFile(byteData, fileName) {
+            const blob = new Blob([byteData], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = fileName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        }
+
+        // 1. UNIR PDFS
+        const mInp = document.getElementById('merge-input'), mBtn = document.getElementById('btn-merge');
+        mInp.addEventListener('change', () => {
+            document.getElementById('merge-file-count').textContent = mInp.files.length ? `${mInp.files.length} archivos` : 'Ningún archivo';
+            mBtn.disabled = !mInp.files.length;
+        });
+        mBtn.addEventListener('click', async () => {
+            mBtn.innerHTML = 'Procesando...';
+            try {
+                const doc = await PDFDocument.create();
+                for (let f of mInp.files) {
+                    const pdf = await PDFDocument.load(await f.arrayBuffer());
+                    const pages = await doc.copyPages(pdf, pdf.getPageIndices());
+                    pages.forEach(p => doc.addPage(p));
+                }
+                downloadFile(await doc.save(), 'AMS_Merge.pdf');
+            } catch(e) { alert('Error al unir'); } finally { mBtn.innerHTML = 'Procesar Unión'; }
+        });
+
+        // 2. EXTRAER
+        const sInp = document.getElementById('split-input'), sRng = document.getElementById('split-ranges'), sBtn = document.getElementById('btn-split');
+        sInp.addEventListener('change', () => {
+            document.getElementById('split-file-name').textContent = sInp.files[0] ? sInp.files[0].name : 'Seleccionar PDF';
+            sRng.disabled = sBtn.disabled = !sInp.files[0];
+        });
+        sBtn.addEventListener('click', async () => {
+            sBtn.innerHTML = 'Procesando...';
+            try {
+                const pagesToExt = parseRanges(sRng.value).map(p=>p-1);
+                const src = await PDFDocument.load(await sInp.files[0].arrayBuffer());
+                const valid = pagesToExt.filter(p => p>=0 && p<src.getPageCount());
+                const doc = await PDFDocument.create();
+                const pages = await doc.copyPages(src, valid);
+                pages.forEach(p => doc.addPage(p));
+                downloadFile(await doc.save(), 'AMS_Extract.pdf');
+            } catch(e) { alert('Rango inválido o error'); } finally { sBtn.innerHTML = 'Extraer Nodos'; }
+        });
+
+        // 3. IMAGEN A PDF
+        const iInp = document.getElementById('img-input'), iBtn = document.getElementById('btn-img');
+        iInp.addEventListener('change', () => {
+            document.getElementById('img-file-count').textContent = iInp.files.length ? `${iInp.files.length} imágenes` : 'Ningún archivo';
+            iBtn.disabled = !iInp.files.length;
+        });
+        iBtn.addEventListener('click', async () => {
+            iBtn.innerHTML = 'Procesando...';
+            try {
+                const doc = await PDFDocument.create();
+                for (let f of iInp.files) {
+                    const bytes = await f.arrayBuffer();
+                    let img;
+                    if(f.type === 'image/jpeg') img = await doc.embedJpg(bytes);
+                    else if(f.type === 'image/png') img = await doc.embedPng(bytes);
+                    
+                    if(img) {
+                        const page = doc.addPage([img.width, img.height]);
+                        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                    }
+                }
+                downloadFile(await doc.save(), 'AMS_Images.pdf');
+            } catch(e) { alert('Error al procesar imágenes'); } finally { iBtn.innerHTML = 'Generar PDF'; }
+        });
+
+        // 4. PURGAR PÁGINAS
+        const rInp = document.getElementById('remove-input'), rRng = document.getElementById('remove-ranges'), rBtn = document.getElementById('btn-remove');
+        rInp.addEventListener('change', () => {
+            document.getElementById('remove-file-name').textContent = rInp.files[0] ? rInp.files[0].name : 'Seleccionar PDF';
+            rRng.disabled = rBtn.disabled = !rInp.files[0];
+        });
+        rBtn.addEventListener('click', async () => {
+            rBtn.innerHTML = 'Procesando...';
+            try {
+                const toRemove = parseRanges(rRng.value).map(p=>p-1);
+                const src = await PDFDocument.load(await rInp.files[0].arrayBuffer());
+                const toKeep = [];
+                for(let i=0; i<src.getPageCount(); i++) if(!toRemove.includes(i)) toKeep.push(i);
+                
+                const doc = await PDFDocument.create();
+                const pages = await doc.copyPages(src, toKeep);
+                pages.forEach(p => doc.addPage(p));
+                downloadFile(await doc.save(), 'AMS_Purged.pdf');
+            } catch(e) { alert('Error al purgar'); } finally { rBtn.innerHTML = 'Ejecutar Purga'; }
+        });
+
+        // 5. MARCA DE AGUA
+        const wInp = document.getElementById('watermark-input'), wTxt = document.getElementById('watermark-text'), wBtn = document.getElementById('btn-watermark');
+        wInp.addEventListener('change', () => {
+            document.getElementById('watermark-file-name').textContent = wInp.files[0] ? wInp.files[0].name : 'Seleccionar PDF';
+            wTxt.disabled = wBtn.disabled = !wInp.files[0];
+        });
+        wBtn.addEventListener('click', async () => {
+            wBtn.innerHTML = 'Procesando...';
+            try {
+                const text = wTxt.value.trim() || "AMS PROTECTED";
+                const doc = await PDFDocument.load(await wInp.files[0].arrayBuffer());
+                doc.getPages().forEach(p => {
+                    const { width, height } = p.getSize();
+                    p.drawText(text, { x: width/4, y: height/2, size: 50, color: rgb(0.3,0.3,0.3), opacity: 0.2, rotate: degrees(45) });
+                });
+                downloadFile(await doc.save(), 'AMS_Watermark.pdf');
+            } catch(e) { alert('Error al aplicar sello'); } finally { wBtn.innerHTML = 'Aplicar Sello'; }
+        });
+
+        // 6. ROTAR
+        const rotInp = document.getElementById('rotate-input'), rotAng = document.getElementById('rotate-angle'), rotBtn = document.getElementById('btn-rotate');
+        rotInp.addEventListener('change', () => {
+            document.getElementById('rotate-file-name').textContent = rotInp.files[0] ? rotInp.files[0].name : 'Seleccionar PDF';
+            rotAng.disabled = rotBtn.disabled = !rotInp.files[0];
+        });
+        rotBtn.addEventListener('click', async () => {
+            rotBtn.innerHTML = 'Procesando...';
+            try {
+                const doc = await PDFDocument.load(await rotInp.files[0].arrayBuffer());
+                doc.getPages().forEach(p => p.setRotation(degrees(parseInt(rotAng.value))));
+                downloadFile(await doc.save(), 'AMS_Rotated.pdf');
+            } catch(e) { alert('Error al rotar'); } finally { rotBtn.innerHTML = 'Reorientar'; }
+        });
+
+        // 7. LIMPIAR PROPIEDADES (Metadatos)
+        const metaInput = document.getElementById('meta-input');
+        const metaTitle = document.getElementById('meta-title');
+        const metaAuthor = document.getElementById('meta-author');
+        const btnMeta = document.getElementById('btn-meta');
+        
+        metaInput.addEventListener('change', async () => {
+            const file = metaInput.files[0];
+            document.getElementById('meta-file-name').textContent = file ? file.name : 'Seleccionar PDF';
+            metaTitle.disabled = metaAuthor.disabled = btnMeta.disabled = !file;
+            if(file) {
+                try {
+                    const pdf = await PDFDocument.load(await file.arrayBuffer());
+                    metaTitle.value = pdf.getTitle() || '';
+                    metaAuthor.value = pdf.getAuthor() || '';
+                } catch(e) {}
+            }
+        });
+
+        btnMeta.addEventListener('click', async () => {
+            btnMeta.innerHTML = 'Guardando...';
+            try {
+                const pdf = await PDFDocument.load(await metaInput.files[0].arrayBuffer());
+                pdf.setTitle(metaTitle.value.trim() || ' '); // Limpia si está vacío
+                pdf.setAuthor(metaAuthor.value.trim() || ' ');
+                downloadFile(await pdf.save(), 'AMS_Propiedades_Limpio.pdf');
+            } catch (e) { alert("Error al actualizar propiedades."); }
+            finally { btnMeta.innerHTML = 'Limpiar Datos'; }
+        });
+
+        // 8. NUMERAR PÁGINAS
+        const numInp = document.getElementById('number-input'), numBtn = document.getElementById('btn-number');
+        numInp.addEventListener('change', () => {
+            document.getElementById('number-file-name').textContent = numInp.files[0] ? numInp.files[0].name : 'Seleccionar PDF';
+            numBtn.disabled = !numInp.files[0];
+        });
+        numBtn.addEventListener('click', async () => {
+            numBtn.innerHTML = 'Procesando...';
+            try {
+                const pdf = await PDFDocument.load(await numInp.files[0].arrayBuffer());
+                const pages = pdf.getPages();
+                const total = pages.length;
+                pages.forEach((page, idx) => {
+                    const { width } = page.getSize();
+                    page.drawText(`${idx + 1} / ${total}`, { x: width / 2 - 15, y: 20, size: 12, color: rgb(0,0,0) });
+                });
+                downloadFile(await pdf.save(), 'AMS_Numerado.pdf');
+            } catch (e) { alert('Error al numerar páginas.'); }
+            finally { numBtn.innerHTML = 'Aplicar Numeración'; }
+        });
+    </script>
+</body>
+</html>
