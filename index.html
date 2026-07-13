@@ -13,8 +13,18 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     
-    <!-- Librería PDF-lib -->
+    <!-- Librería PDF-lib (Edición estructural) -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    
+    <!-- Librería PDF.js (Renderizado visual para PDF a Imagen) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Configurar el worker de PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    
+    <!-- Librería JSZip (Para descargar múltiples imágenes en un solo archivo ZIP) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
         /* =========================================
@@ -132,6 +142,7 @@
         .icon-box.pink { color: #EC4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.3); }
         .icon-box.blue { color: #3B82F6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
         .icon-box.yellow { color: #EAB308; box-shadow: 0 0 20px rgba(234, 179, 8, 0.3); }
+        .icon-box.red { color: #EF4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
 
         /* INPUTS Y DRAG & DROP */
         .drop-zone {
@@ -224,9 +235,10 @@
         </p>
     </section>
 
-    <!-- Cuadrícula Principal (8 Herramientas 100% Funcionales) -->
+    <!-- Cuadrícula Principal (9 Herramientas 100% Funcionales) -->
     <section class="container">
         <div class="tool-grid">
+            
             <!-- 1. Unir PDFs -->
             <div class="tool-card">
                 <div class="icon-box cyan"><i class="fa-solid fa-layer-group"></i></div>
@@ -239,7 +251,6 @@
                     <input type="file" id="merge-input" accept="application/pdf" multiple>
                 </label>
                 <button class="btn btn-ams" id="btn-merge" disabled>Procesar Unión</button>
-                <div class="status-msg text-success" id="merge-status"><i class="fa-solid fa-check"></i> Completado</div>
             </div>
 
             <!-- 2. Extraer Páginas -->
@@ -254,7 +265,6 @@
                 </label>
                 <input type="text" class="form-control form-control-sm text-center" id="split-ranges" placeholder="Rangos (Ej: 1, 3, 5-8)" disabled>
                 <button class="btn btn-ams" id="btn-split" disabled>Extraer Nodos</button>
-                <div class="status-msg text-success" id="split-status"><i class="fa-solid fa-check"></i> Completado</div>
             </div>
 
             <!-- 3. Imagen a PDF -->
@@ -269,7 +279,19 @@
                     <input type="file" id="img-input" accept="image/jpeg, image/png" multiple>
                 </label>
                 <button class="btn btn-ams" id="btn-img" disabled>Generar PDF</button>
-                <div class="status-msg text-success" id="img-status"><i class="fa-solid fa-check"></i> Completado</div>
+            </div>
+
+            <!-- 9. PDF a Imagen (NUEVO) -->
+            <div class="tool-card">
+                <div class="icon-box red"><i class="fa-solid fa-file-image"></i></div>
+                <h3 class="h4 fw-bold mb-2">PDF a Imagen</h3>
+                <p class="text-muted small mb-4">Extrae cada página de tu PDF y conviértelas en imágenes PNG de alta calidad.</p>
+                <label class="drop-zone">
+                    <i class="fa-solid fa-file-pdf fs-4 mb-2 text-danger"></i>
+                    <div class="small text-truncate px-2" id="pdf2img-file-name">Seleccionar PDF</div>
+                    <input type="file" id="pdf2img-input" accept="application/pdf">
+                </label>
+                <button class="btn btn-ams" id="btn-pdf2img" disabled>Extraer Imágenes</button>
             </div>
 
             <!-- 4. Eliminar Páginas -->
@@ -284,7 +306,6 @@
                 </label>
                 <input type="text" class="form-control form-control-sm text-center" id="remove-ranges" placeholder="A purgar (Ej: 2, 4-6)" disabled>
                 <button class="btn btn-ams" id="btn-remove" disabled>Ejecutar Purga</button>
-                <div class="status-msg text-success" id="remove-status"><i class="fa-solid fa-check"></i> Completado</div>
             </div>
 
             <!-- 5. Marca de Agua -->
@@ -299,7 +320,6 @@
                 </label>
                 <input type="text" class="form-control form-control-sm text-center mb-2" id="watermark-text" placeholder="Texto (Ej: CONFIDENCIAL)" disabled>
                 <button class="btn btn-ams" id="btn-watermark" disabled>Aplicar Sello</button>
-                <div class="status-msg text-success" id="watermark-status"><i class="fa-solid fa-check"></i> Completado</div>
             </div>
 
             <!-- 6. Rotar PDF -->
@@ -318,7 +338,6 @@
                     <option value="270">Rotar -90° (Izquierda)</option>
                 </select>
                 <button class="btn btn-ams" id="btn-rotate" disabled>Reorientar</button>
-                <div class="status-msg text-success" id="rotate-status"><i class="fa-solid fa-check"></i> Completado</div>
             </div>
 
             <!-- 7. Limpiar Propiedades (Metadatos) -->
@@ -336,7 +355,6 @@
                     <input type="text" class="form-control form-control-sm text-center m-0" id="meta-author" placeholder="Nuevo Autor" disabled>
                 </div>
                 <button class="btn btn-ams" id="btn-meta" disabled>Limpiar Datos</button>
-                <div class="status-msg text-success" id="meta-status"><i class="fa-solid fa-check"></i> Completado</div>
             </div>
 
             <!-- 8. Numerar Páginas -->
@@ -350,7 +368,6 @@
                     <input type="file" id="number-input" accept="application/pdf">
                 </label>
                 <button class="btn btn-ams mt-auto" id="btn-number" disabled>Aplicar Numeración</button>
-                <div class="status-msg text-success" id="number-status"><i class="fa-solid fa-check"></i> Completado</div>
             </div>
 
         </div>
@@ -464,6 +481,57 @@
             } catch(e) { alert('Error al procesar imágenes'); } finally { iBtn.innerHTML = 'Generar PDF'; }
         });
 
+        // 9. PDF A IMAGEN (NUEVO)
+        const p2iInp = document.getElementById('pdf2img-input'), p2iBtn = document.getElementById('btn-pdf2img');
+        p2iInp.addEventListener('change', () => {
+            document.getElementById('pdf2img-file-name').textContent = p2iInp.files[0] ? p2iInp.files[0].name : 'Seleccionar PDF';
+            p2iBtn.disabled = !p2iInp.files[0];
+        });
+        p2iBtn.addEventListener('click', async () => {
+            p2iBtn.innerHTML = 'Procesando... <i class="fa-solid fa-spinner fa-spin ms-1"></i>';
+            try {
+                const file = p2iInp.files[0];
+                const arrayBuffer = await file.arrayBuffer();
+                
+                // Cargar PDF usando PDF.js
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                const zip = new JSZip(); // Preparar ZIP para múltiples imágenes
+
+                for(let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({scale: 2.0}); // Escala 2x para mejor resolución HD
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    await page.render({canvasContext: ctx, viewport: viewport}).promise;
+
+                    // Convertir el canvas a un blob (imagen PNG)
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                    zip.file(`pagina_${i}.png`, blob);
+                }
+
+                // Generar y descargar el archivo ZIP
+                const zipBlob = await zip.generateAsync({type: 'blob'});
+                const zipUrl = URL.createObjectURL(zipBlob);
+                const a = document.createElement('a'); 
+                a.href = zipUrl; 
+                a.download = file.name.replace('.pdf', '_AMS_Imagenes.zip');
+                document.body.appendChild(a); 
+                a.click(); 
+                document.body.removeChild(a); 
+                URL.revokeObjectURL(zipUrl);
+
+            } catch(e) { 
+                console.error(e);
+                alert('Error al convertir el PDF a imágenes.'); 
+            } finally { 
+                p2iBtn.innerHTML = 'Extraer Imágenes'; 
+            }
+        });
+
         // 4. PURGAR PÁGINAS
         const rInp = document.getElementById('remove-input'), rRng = document.getElementById('remove-ranges'), rBtn = document.getElementById('btn-remove');
         rInp.addEventListener('change', () => {
@@ -542,7 +610,7 @@
             btnMeta.innerHTML = 'Guardando...';
             try {
                 const pdf = await PDFDocument.load(await metaInput.files[0].arrayBuffer());
-                pdf.setTitle(metaTitle.value.trim() || ' '); // Limpia si está vacío
+                pdf.setTitle(metaTitle.value.trim() || ' '); 
                 pdf.setAuthor(metaAuthor.value.trim() || ' ');
                 downloadFile(await pdf.save(), 'AMS_Propiedades_Limpio.pdf');
             } catch (e) { alert("Error al actualizar propiedades."); }
