@@ -60,15 +60,15 @@
         h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; }
         .text-muted { color: var(--text-muted) !important; }
         
-        /* NAVBAR & MENÚ OFICIAL BOOTSTRAP */
-        .navbar { background: rgba(5, 8, 16, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glass); }
+        /* NAVBAR OFICIAL BOOTSTRAP */
+        .navbar { background: rgba(5, 8, 16, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glass); z-index: 1030; }
         .brand-logo {
             background: linear-gradient(90deg, var(--cyan), var(--purple));
             color: #000 !important; padding: 4px 12px; border-radius: 4px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem;
         }
         
-        /* Menú lateral forzado al color oscuro de la web */
-        .offcanvas { background-color: var(--bg-deep) !important; border-left: 1px solid var(--border-glass); }
+        /* MENÚ LATERAL (OFFCANVAS) */
+        .offcanvas { background-color: var(--bg-deep) !important; border-left: 1px solid var(--border-glass); z-index: 1045; }
         .menu-link {
             display: flex; align-items: center; padding: 12px 15px; color: var(--text-main); text-decoration: none; border-radius: 8px; transition: all 0.2s; margin-bottom: 5px; background: rgba(255,255,255,0.02); border: 1px solid transparent;
         }
@@ -86,7 +86,7 @@
         /* CUADRÍCULA RESPONSIVE PERFECTA */
         .tool-grid { 
             display: grid; 
-            grid-template-columns: 1fr; /* En celular ocupa el 100% sin desbordar */
+            grid-template-columns: 1fr;
             gap: 20px; 
             padding-bottom: 60px; 
         }
@@ -133,7 +133,7 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- NAVEGACIÓN Y MENÚ HAMBURGUESA -->
+    <!-- NAVEGACIÓN -->
     <nav class="navbar navbar-dark navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="https://avilamorasoluciones.github.io/ams" target="_blank">
@@ -144,34 +144,34 @@
             <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuHerramientas" aria-controls="menuHerramientas">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
-            <!-- Menú Offcanvas -->
-            <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="menuHerramientas" aria-labelledby="menuHerramientasLabel">
-                <div class="offcanvas-header border-bottom border-secondary">
-                    <h5 class="offcanvas-title fw-bold" id="menuHerramientasLabel" style="font-family: 'Space Grotesk', sans-serif;">Nuestras Herramientas</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <p class="text-muted small mb-3">SELECCIONA UNA OPCIÓN:</p>
-                    <a href="#tool-merge" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-layer-group"></i></div> Unir Documentos PDF</a>
-                    <a href="#tool-webp" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-green-ams"><i class="fa-solid fa-file-code"></i></div> Convertir a WebP</a>
-                    <a href="#tool-circle" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-crop-simple"></i></div> Recorte Circular</a>
-                    <a href="#tool-img2pdf" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-regular fa-image"></i></div> Imágenes a PDF</a>
-                    <a href="#tool-pdf2img" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-red-ams"><i class="fa-solid fa-file-image"></i></div> Extraer Fotos de PDF</a>
-                    <a href="#tool-compress" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-orange-ams"><i class="fa-solid fa-minimize"></i></div> Comprimir Imágenes</a>
-                    <a href="#tool-split" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-scissors"></i></div> Extraer Páginas de PDF</a>
-                    <a href="#tool-remove" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-trash-can-arrow-up"></i></div> Borrar Páginas de PDF</a>
-                    <a href="#tool-rotate" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-yellow-ams"><i class="fa-solid fa-arrows-rotate"></i></div> Girar Documento</a>
-                    <a href="#tool-watermark" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-blue-ams"><i class="fa-solid fa-fingerprint"></i></div> Marca de Agua</a>
-                    
-                    <hr class="border-secondary my-4">
-                    <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light w-100 rounded-pill" style="font-size: 0.9rem;">
-                        <i class="fa-solid fa-globe me-2"></i> Ir a la Web Principal
-                    </a>
-                </div>
-            </div>
         </div>
     </nav>
+
+    <!-- MENÚ OFFCANVAS (Ahora fuera del Navbar para que no se rompa) -->
+    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="menuHerramientas" aria-labelledby="menuHerramientasLabel">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title fw-bold" id="menuHerramientasLabel" style="font-family: 'Space Grotesk', sans-serif;">Nuestras Herramientas</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p class="text-muted small mb-3">SELECCIONA UNA OPCIÓN:</p>
+            <a href="#tool-merge" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-layer-group"></i></div> Unir Documentos PDF</a>
+            <a href="#tool-webp" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-green-ams"><i class="fa-solid fa-file-code"></i></div> Convertir a WebP</a>
+            <a href="#tool-circle" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-crop-simple"></i></div> Recorte Circular</a>
+            <a href="#tool-img2pdf" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-regular fa-image"></i></div> Imágenes a PDF</a>
+            <a href="#tool-pdf2img" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-red-ams"><i class="fa-solid fa-file-image"></i></div> Extraer Fotos de PDF</a>
+            <a href="#tool-compress" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-orange-ams"><i class="fa-solid fa-minimize"></i></div> Comprimir Imágenes</a>
+            <a href="#tool-split" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-scissors"></i></div> Extraer Páginas de PDF</a>
+            <a href="#tool-remove" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-trash-can-arrow-up"></i></div> Borrar Páginas de PDF</a>
+            <a href="#tool-rotate" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-yellow-ams"><i class="fa-solid fa-arrows-rotate"></i></div> Girar Documento</a>
+            <a href="#tool-watermark" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-blue-ams"><i class="fa-solid fa-fingerprint"></i></div> Marca de Agua</a>
+            
+            <hr class="border-secondary my-4">
+            <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light w-100 rounded-pill" style="font-size: 0.9rem;">
+                <i class="fa-solid fa-globe me-2"></i> Ir a la Web Principal
+            </a>
+        </div>
+    </div>
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow-1 w-100">
@@ -318,7 +318,7 @@
                 <div class="tool-card" id="tool-rotate">
                     <div class="icon-box yellow"><i class="fa-solid fa-arrows-rotate"></i></div>
                     <h3 class="h4 fw-bold mb-2">Girar Documento</h3>
-                    <p class="text-muted small mb-3">Corrige la orientación de documentos o fotos que fueron escaneados al revés o de lado.</p>
+                    <p class="text-muted small mb-3">Corrige la orientation de documentos o fotos que fueron escaneados al revés o de lado.</p>
                     <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 PDF orientado correctamente.</div>
                     <label class="drop-zone py-2">
                         <i class="fa-solid fa-file-pdf fs-5 mb-1 text-warning"></i>
