@@ -22,6 +22,8 @@
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <!-- Librería para Código QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         /* =========================================
@@ -29,7 +31,7 @@
            ========================================= */
         :root {
             --bg-deep: #050810;
-            --bg-glass: rgba(13, 17, 28, 0.6);
+            --bg-card: #0d111c;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
             --cyan: #00F0FF;
@@ -41,93 +43,98 @@
         }
 
         html { scroll-behavior: smooth; }
-        
-        /* BLOQUEO DE DESBORDAMIENTO HORIZONTAL */
-        html, body {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
+        html, body { max-width: 100%; overflow-x: hidden; }
 
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
             background-image: 
-                radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.05), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.05), transparent 25%);
+                radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.03), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.03), transparent 25%);
         }
 
         h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; }
         .text-muted { color: var(--text-muted) !important; }
         
-        /* NAVBAR OFICIAL BOOTSTRAP */
-        .navbar { background: rgba(5, 8, 16, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glass); z-index: 1030; }
-        .brand-logo {
-            background: linear-gradient(90deg, var(--cyan), var(--purple));
-            color: #000 !important; padding: 4px 12px; border-radius: 4px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem;
-        }
+        /* NAVBAR Y MENÚ LATERAL */
+        .navbar { background: rgba(5, 8, 16, 0.95); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-glass); z-index: 1030; padding: 0.5rem 1rem; }
+        .brand-logo { background: linear-gradient(90deg, var(--cyan), var(--purple)); color: #000 !important; padding: 3px 10px; border-radius: 4px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem; }
         
-        /* MENÚ LATERAL (OFFCANVAS) */
         .offcanvas { background-color: var(--bg-deep) !important; border-left: 1px solid var(--border-glass); z-index: 1045; }
-        .menu-link {
-            display: flex; align-items: center; padding: 12px 15px; color: var(--text-main); text-decoration: none; border-radius: 8px; transition: all 0.2s; margin-bottom: 5px; background: rgba(255,255,255,0.02); border: 1px solid transparent;
-        }
-        .menu-link:hover { background: var(--bg-glass); border-color: var(--border-glass); color: white; }
-        .menu-icon { width: 30px; text-align: center; font-size: 1.2rem; }
+        .menu-link { display: flex; align-items: center; padding: 10px 15px; color: var(--text-main); text-decoration: none; border-radius: 8px; transition: background 0.2s; margin-bottom: 4px; background: rgba(255,255,255,0.02); border: 1px solid transparent; font-size: 0.9rem; }
+        .menu-link:hover { background: var(--bg-card); border-color: var(--border-glass); color: white; }
+        .menu-icon { width: 25px; text-align: center; font-size: 1.1rem; }
 
-        /* HERO */
-        .hero-section { padding: 60px 15px 50px; text-align: center; }
-        .text-gradient {
-            background: linear-gradient(90deg, var(--cyan), #B026FF);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px var(--purple-glow);
-        }
-        .badge-core { background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid var(--cyan-glow); padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
+        /* HERO Y GLOBALES */
+        .hero-section { padding: 40px 15px 30px; text-align: center; }
+        .hero-section h1 { font-size: 2.2rem; }
+        .text-gradient { background: linear-gradient(90deg, var(--cyan), #B026FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px var(--purple-glow); }
+        .badge-core { background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid var(--cyan-glow); padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; margin-bottom: 15px; }
 
-        /* CUADRÍCULA RESPONSIVE PERFECTA */
-        .tool-grid { 
-            display: grid; 
-            grid-template-columns: 1fr;
-            gap: 20px; 
-            padding-bottom: 60px; 
-        }
-        @media (min-width: 576px) {
-            .tool-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        }
+        /* SEPARADORES DE SECCIÓN */
+        .section-header { display: flex; align-items: center; gap: 15px; margin-top: 40px; margin-bottom: 20px; }
+        .section-header h2 { font-size: 1.25rem; margin: 0; color: var(--text-main); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .section-header hr { flex-grow: 1; border-color: var(--border-glass); opacity: 1; margin: 0; }
+        .section-header i { color: var(--cyan); }
 
-        .tool-card { background: var(--bg-glass); backdrop-filter: blur(10px); border: 1px solid var(--border-glass); border-radius: 16px; padding: 25px; display: flex; flex-direction: column; transition: all 0.4s; position: relative; scroll-margin-top: 90px; }
-        .tool-card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 15px 35px rgba(0, 240, 255, 0.1); }
-        .icon-box { width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); }
+        /* CUADRÍCULA Y TARJETAS */
+        .tool-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding-bottom: 20px; }
+        @media (min-width: 576px) { .tool-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; } }
+
+        .tool-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; transition: transform 0.3s, border-color 0.3s; position: relative; scroll-margin-top: 90px; }
+        .tool-card:hover { transform: translateY(-3px); border-color: var(--border-hover); }
         
-        /* COLORES */
-        .text-cyan-ams { color: var(--cyan) !important; } .icon-box.cyan { color: var(--cyan); box-shadow: 0 0 20px var(--cyan-glow); }
-        .text-purple-ams { color: #B026FF !important; } .icon-box.purple { color: #B026FF; box-shadow: 0 0 20px var(--purple-glow); }
-        .text-green-ams { color: #10B981 !important; } .icon-box.green { color: #10B981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
-        .text-orange-ams { color: #F59E0B !important; } .icon-box.orange { color: #F59E0B; box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
-        .text-pink-ams { color: #EC4899 !important; } .icon-box.pink { color: #EC4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.3); }
-        .text-blue-ams { color: #3B82F6 !important; } .icon-box.blue { color: #3B82F6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-        .text-yellow-ams { color: #EAB308 !important; } .icon-box.yellow { color: #EAB308; box-shadow: 0 0 20px rgba(234, 179, 8, 0.3); }
-        .text-red-ams { color: #EF4444 !important; } .icon-box.red { color: #EF4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+        .icon-box { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); }
+        .tool-card .h4 { font-size: 1.1rem; margin-bottom: 5px; }
+        .tool-card p.small { font-size: 0.8rem; margin-bottom: 12px; line-height: 1.4; }
 
-        .result-box { background: rgba(0, 0, 0, 0.4); border: 1px dashed rgba(255, 255, 255, 0.15); padding: 10px 12px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 18px; color: #E2E8F0; line-height: 1.4; word-wrap: break-word; }
+        /* COLORES */
+        .text-cyan-ams { color: var(--cyan) !important; } .icon-box.cyan { color: var(--cyan); box-shadow: 0 0 10px var(--cyan-glow); }
+        .text-purple-ams { color: #B026FF !important; } .icon-box.purple { color: #B026FF; box-shadow: 0 0 10px var(--purple-glow); }
+        .text-green-ams { color: #10B981 !important; } .icon-box.green { color: #10B981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+        .text-orange-ams { color: #F59E0B !important; } .icon-box.orange { color: #F59E0B; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+        .text-pink-ams { color: #EC4899 !important; } .icon-box.pink { color: #EC4899; box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
+        .text-blue-ams { color: #3B82F6 !important; } .icon-box.blue { color: #3B82F6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+        .text-yellow-ams { color: #EAB308 !important; } .icon-box.yellow { color: #EAB308; box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+        .text-red-ams { color: #EF4444 !important; } .icon-box.red { color: #EF4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+
+        .result-box { background: rgba(0, 0, 0, 0.4); border: 1px dashed rgba(255, 255, 255, 0.15); padding: 8px 10px; border-radius: 6px; font-size: 0.75rem; margin-bottom: 12px; color: #E2E8F0; line-height: 1.3; word-wrap: break-word; }
         .result-box b { color: var(--cyan); font-weight: 700; }
 
-        /* INPUTS */
-        .drop-zone { background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; transition: all 0.3s; margin-bottom: 15px; }
+        /* INPUTS Y MICRO-INTERFACES */
+        .drop-zone { background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15); border-radius: 10px; padding: 15px 10px; text-align: center; cursor: pointer; transition: background 0.3s, border-color 0.3s; margin-bottom: 10px; }
         .drop-zone:hover, .drop-zone.dragover { border-color: var(--cyan); background: rgba(0, 240, 255, 0.05); }
         .drop-zone input[type="file"] { display: none; }
-        .form-control, .form-select { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); color: var(--text-main); margin-bottom: 15px; border-radius: 8px; }
-        .form-control:focus, .form-select:focus { background: rgba(0,0,0,0.5); border-color: var(--cyan); color: var(--text-main); box-shadow: 0 0 10px var(--cyan-glow); }
-        .btn-ams { background: linear-gradient(90deg, var(--cyan), var(--purple)); color: #000 !important; border: none; font-weight: 700; padding: 12px; border-radius: 8px; width: 100%; margin-top: auto; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; transition: all 0.3s; }
-        .btn-ams:hover { box-shadow: 0 0 20px var(--cyan-glow); transform: scale(1.02); }
-        .btn-ams:disabled { background: #1E293B; color: #64748B !important; box-shadow: none; cursor: not-allowed; }
+        .drop-zone i { font-size: 1.2rem !important; margin-bottom: 5px !important; }
+        
+        .form-control, .form-select, .form-control-color { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 6px; font-size: 0.85rem; padding: 6px 10px; }
+        .form-control:focus, .form-select:focus { background: rgba(0,0,0,0.5); border-color: var(--cyan); color: var(--text-main); box-shadow: none; outline: 1px solid var(--cyan); }
+        .form-control-color { padding: 0.1rem; height: 30px; width: 100%; cursor: pointer; }
+        textarea.form-control { resize: none; font-family: monospace; font-size: 0.8rem; }
+        
+        .form-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
+        .form-range::-webkit-slider-thumb { background: var(--cyan); }
+        .form-range::-moz-range-thumb { background: var(--cyan); }
+        
+        .micro-options { background: rgba(255,255,255,0.02); border-radius: 8px; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-glass); }
+
+        .btn-ams { background: linear-gradient(90deg, var(--cyan), var(--purple)); color: #000 !important; border: none; font-weight: 700; padding: 10px; border-radius: 6px; width: 100%; margin-top: auto; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; transition: transform 0.2s, filter 0.2s; }
+        .btn-ams:hover { filter: brightness(1.1); transform: scale(1.02); }
+        .btn-ams:disabled { background: #1E293B; color: #64748B !important; cursor: not-allowed; transform: none; filter: none; }
+
+        .form-check-input { width: 1.5em; height: 1.5em; margin-top: 0; }
+        .form-check-input:checked { background-color: var(--cyan); border-color: var(--cyan); }
+        .form-check-label { font-size: 0.8rem !important; margin-left: 5px; margin-top: 2px;}
 
         /* CROPPER JS */
         .cropper-view-box, .cropper-face { border-radius: 50%; }
-        .cropper-container { margin-bottom: 15px; }
+        .cropper-container { margin-bottom: 10px; }
 
         @media (max-width: 576px) {
-            .hero-section h1 { font-size: 2.3rem; }
-            .btn-ams { font-size: 0.85rem; padding: 10px; }
+            .hero-section h1 { font-size: 1.9rem; }
+            .hero-section p { font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -138,37 +145,46 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="https://avilamorasoluciones.github.io/ams" target="_blank">
                 <span class="brand-logo">AMS Tools</span> 
-                <span class="fw-bold fs-5 d-none d-sm-inline text-white" style="font-family: 'Space Grotesk', sans-serif;">Avila Mora Soluciones</span>
+                <span class="fw-bold d-none d-sm-inline text-white" style="font-family: 'Space Grotesk', sans-serif;">Avila Mora Soluciones</span>
             </a>
             
-            <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuHerramientas" aria-controls="menuHerramientas">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler shadow-none border-0 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuHerramientas" aria-controls="menuHerramientas">
+                <span class="navbar-toggler-icon" style="width: 1.2em; height: 1.2em;"></span>
             </button>
         </div>
     </nav>
 
-    <!-- MENÚ OFFCANVAS (Ahora fuera del Navbar para que no se rompa) -->
+    <!-- MENÚ OFFCANVAS -->
     <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="menuHerramientas" aria-labelledby="menuHerramientasLabel">
-        <div class="offcanvas-header border-bottom border-secondary">
-            <h5 class="offcanvas-title fw-bold" id="menuHerramientasLabel" style="font-family: 'Space Grotesk', sans-serif;">Nuestras Herramientas</h5>
+        <div class="offcanvas-header border-bottom border-secondary py-3">
+            <h5 class="offcanvas-title fw-bold" id="menuHerramientasLabel" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem;">Nuestras Herramientas</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body">
-            <p class="text-muted small mb-3">SELECCIONA UNA OPCIÓN:</p>
-            <a href="#tool-merge" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-layer-group"></i></div> Unir Documentos PDF</a>
-            <a href="#tool-webp" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-green-ams"><i class="fa-solid fa-file-code"></i></div> Convertir a WebP</a>
-            <a href="#tool-circle" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-crop-simple"></i></div> Recorte Circular</a>
-            <a href="#tool-img2pdf" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-regular fa-image"></i></div> Imágenes a PDF</a>
-            <a href="#tool-pdf2img" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-red-ams"><i class="fa-solid fa-file-image"></i></div> Extraer Fotos de PDF</a>
+        <div class="offcanvas-body" style="overflow-y: auto;">
+            
+            <p class="text-muted small mb-2 fw-bold" style="font-size: 0.75rem;">📸 MULTIMEDIA E IMÁGENES</p>
             <a href="#tool-compress" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-orange-ams"><i class="fa-solid fa-minimize"></i></div> Comprimir Imágenes</a>
-            <a href="#tool-split" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-scissors"></i></div> Extraer Páginas de PDF</a>
-            <a href="#tool-remove" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-trash-can-arrow-up"></i></div> Borrar Páginas de PDF</a>
+            <a href="#tool-img-conv" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-green-ams"><i class="fa-solid fa-shuffle"></i></div> Convertir Formatos</a>
+            <a href="#tool-circle" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-crop-simple"></i></div> Recorte Circular</a>
+            
+            <p class="text-muted small mt-4 mb-2 fw-bold" style="font-size: 0.75rem;">📄 DOCUMENTOS PDF</p>
+            <a href="#tool-merge" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-layer-group"></i></div> Unir Documentos</a>
+            <a href="#tool-img2pdf" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-regular fa-image"></i></div> Imágenes a PDF</a>
+            <a href="#tool-split" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-scissors"></i></div> Extraer Páginas</a>
+            <a href="#tool-pdf2img" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-red-ams"><i class="fa-solid fa-file-image"></i></div> Extraer Fotos de PDF</a>
+            <a href="#tool-remove" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-trash-can-arrow-up"></i></div> Borrar Páginas</a>
             <a href="#tool-rotate" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-yellow-ams"><i class="fa-solid fa-arrows-rotate"></i></div> Girar Documento</a>
             <a href="#tool-watermark" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-blue-ams"><i class="fa-solid fa-fingerprint"></i></div> Marca de Agua</a>
+
+            <p class="text-muted small mt-4 mb-2 fw-bold" style="font-size: 0.75rem;">🛠️ UTILIDADES Y CÓDIGO</p>
+            <a href="#tool-qr" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-green-ams"><i class="fa-solid fa-qrcode"></i></div> Generador QR</a>
+            <a href="#tool-pass" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-key"></i></div> Generador de Contraseñas</a>
+            <a href="#tool-json" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-solid fa-file-code"></i></div> Formateador JSON</a>
+            <a href="#tool-minify" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-yellow-ams"><i class="fa-solid fa-file-zipper"></i></div> Minificador de Código</a>
             
             <hr class="border-secondary my-4">
-            <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light w-100 rounded-pill" style="font-size: 0.9rem;">
-                <i class="fa-solid fa-globe me-2"></i> Ir a la Web Principal
+            <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light w-100 rounded-pill mb-4" style="font-size: 0.85rem; padding: 8px;">
+                <i class="fa-solid fa-globe me-2"></i> Web Principal AMS
             </a>
         </div>
     </div>
@@ -177,194 +193,315 @@
     <main class="flex-grow-1 w-100">
         
         <!-- HERO SECTION -->
-        <section class="container text-center py-5">
-            <div class="mb-3"><span class="badge-core"><i class="fa-solid fa-shield-halved me-2"></i> Rápido, Seguro y Gratuito</span></div>
-            <h1 class="fw-bold mb-3">Simplifica tus <span class="text-gradient">Archivos</span></h1>
-            <p class="text-muted mx-auto mb-4" style="max-width: 700px; font-size: 1.05rem; line-height: 1.6;">
-                Edita documentos PDF, comprime fotos y recorta imágenes al instante. Diseñado para ser fácil de usar y respetando tu privacidad al máximo.
+        <section class="container hero-section">
+            <div class="badge-core"><i class="fa-solid fa-shield-halved me-1"></i> Rápido, Seguro y 100% Local</div>
+            <h1 class="fw-bold mb-2">Simplifica tus <span class="text-gradient">Archivos</span></h1>
+            <p class="text-muted mx-auto mb-0" style="max-width: 600px;">
+                Ecosistema de herramientas optimizadas. Todo funciona exclusivamente en tu navegador, sin servidores.
             </p>
         </section>
 
-        <!-- CUADRÍCULA DE HERRAMIENTAS -->
-        <section class="container pb-5">
+        <div class="container pb-5">
+            
+            <!-- SECCIÓN 1: MULTIMEDIA E IMÁGENES -->
+            <div class="section-header">
+                <h2><i class="fa-solid fa-image me-2"></i> Multimedia e Imágenes</h2>
+                <hr>
+            </div>
             <div class="tool-grid">
                 
-                <!-- 1. UNIR PDF -->
-                <div class="tool-card" id="tool-merge">
-                    <div class="icon-box cyan"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Unir Documentos PDF</h3>
-                    <p class="text-muted small mb-3">Combina múltiples archivos PDF en un solo documento organizado y listo para enviar.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 PDF unificado con todas las páginas.</div>
+                <!-- Comprimir Imágenes -->
+                <div class="tool-card" id="tool-compress">
+                    <div class="icon-box orange"><i class="fa-solid fa-minimize"></i></div>
+                    <h3 class="h4 fw-bold">Comprimir Imágenes</h3>
+                    <p class="text-muted small">Reduce el peso en MB de tus fotografías pesadas ajustando la calidad de compresión.</p>
+                    <div class="result-box"><b>Recibes:</b> Imágenes ligeras optimizadas.</div>
+                    
                     <label class="drop-zone">
-                        <i class="fa-solid fa-cloud-arrow-up fs-4 mb-2 text-cyan"></i>
-                        <div class="small fw-bold">Soltar PDFs aquí</div>
-                        <div class="small text-muted mt-1" id="merge-file-count">Ningún archivo</div>
-                        <input type="file" id="merge-input" accept="application/pdf" multiple>
+                        <i class="fa-solid fa-weight-hanging text-warning"></i>
+                        <div class="small fw-bold mt-1">Soltar fotos pesadas</div>
+                        <div class="small text-muted" id="compress-file-count">Ningún archivo</div>
+                        <input type="file" id="compress-input" accept="image/jpeg, image/png" multiple>
                     </label>
-                    <button class="btn btn-ams" id="btn-merge" disabled>Unir Archivos</button>
+
+                    <div class="micro-options">
+                        <label class="form-label d-flex justify-content-between">Calidad: <span id="comp-val">60%</span></label>
+                        <input type="range" class="form-range" id="comp-quality" min="0.1" max="1" step="0.05" value="0.6" disabled>
+                    </div>
+                    <button class="btn btn-ams mt-auto" id="btn-compress" disabled>Reducir Peso</button>
                 </div>
 
-                <!-- 2. CONVERTIR A WEBP -->
-                <div class="tool-card" id="tool-webp">
-                    <div class="icon-box green"><i class="fa-solid fa-file-code"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Convertir a WebP</h3>
-                    <p class="text-muted small mb-3">Sube varias imágenes (JPG/PNG) y conviértelas en lote al formato WebP para optimizar webs.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> Archivo ZIP con las imágenes optimizadas.</div>
+                <!-- Convertidor de Imágenes -->
+                <div class="tool-card" id="tool-img-conv">
+                    <div class="icon-box green"><i class="fa-solid fa-shuffle"></i></div>
+                    <h3 class="h4 fw-bold">Convertir Formatos</h3>
+                    <p class="text-muted small">Transforma fotos a JPG, PNG o WebP. Ideal para compatibilidad o páginas web.</p>
+                    <div class="result-box"><b>Recibes:</b> ZIP con fotos en el nuevo formato.</div>
+                    
                     <label class="drop-zone">
-                        <i class="fa-regular fa-images fs-4 mb-2 text-success"></i>
-                        <div class="small fw-bold">Soltar imágenes</div>
-                        <div class="small text-muted mt-1" id="webp-file-count">Ningún archivo</div>
-                        <input type="file" id="webp-input" accept="image/jpeg, image/png, image/webp" multiple>
+                        <i class="fa-regular fa-images text-success"></i>
+                        <div class="small fw-bold mt-1">Soltar imágenes</div>
+                        <div class="small text-muted" id="conv-file-count">Ningún archivo</div>
+                        <input type="file" id="conv-input" accept="image/jpeg, image/png, image/webp" multiple>
                     </label>
-                    <button class="btn btn-ams" id="btn-webp" disabled>Convertir Lote</button>
+                    
+                    <div class="micro-options">
+                        <select class="form-select mb-2" id="conv-format" disabled>
+                            <option value="image/webp">A WebP (Recomendado)</option>
+                            <option value="image/jpeg">A JPG</option>
+                            <option value="image/png">A PNG</option>
+                        </select>
+                        <label class="form-label d-flex justify-content-between mb-0">Calidad: <span id="conv-val">85%</span></label>
+                        <input type="range" class="form-range" id="conv-quality" min="0.1" max="1" step="0.05" value="0.85" disabled>
+                    </div>
+                    <button class="btn btn-ams mt-auto" id="btn-conv" disabled>Convertir</button>
                 </div>
 
-                <!-- 3. RECORTE CIRCULAR INTERACTIVO -->
+                <!-- Recorte Circular -->
                 <div class="tool-card" id="tool-circle">
                     <div class="icon-box pink"><i class="fa-solid fa-crop-simple"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Recorte Circular</h3>
-                    <p class="text-muted small mb-3">Ajusta, mueve y recorta cualquier foto para convertirla en un círculo perfecto sin fondo.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 imagen PNG circular y transparente.</div>
+                    <h3 class="h4 fw-bold">Recorte Circular</h3>
+                    <p class="text-muted small">Ajusta, mueve y recorta cualquier foto para convertirla en un círculo perfecto sin fondo.</p>
+                    <div class="result-box"><b>Recibes:</b> 1 imagen PNG circular transparente.</div>
                     
                     <label class="drop-zone" id="drop-zone-circ">
-                        <i class="fa-solid fa-user-astronaut fs-4 mb-2 text-pink-ams"></i>
-                        <div class="small text-truncate px-2">Seleccionar Imagen</div>
+                        <i class="fa-solid fa-user-astronaut text-pink-ams"></i>
+                        <div class="small fw-bold mt-1">Seleccionar Imagen</div>
                         <input type="file" id="circle-input" accept="image/*">
                     </label>
 
-                    <div id="cropper-container" style="display: none; width: 100%; max-height: 300px; margin-bottom: 15px; text-align: center;">
-                        <img id="cropper-image" style="max-width: 100%; max-height: 250px; display: block; margin: 0 auto;">
+                    <div id="cropper-container" style="display: none; width: 100%; max-height: 250px; margin-bottom: 10px; text-align: center;">
+                        <img id="cropper-image" style="max-width: 100%; max-height: 200px; display: block; margin: 0 auto;">
                         <button class="btn btn-sm btn-outline-secondary mt-2 w-100" id="btn-cancel-crop">Cambiar Foto</button>
                     </div>
+                    <button class="btn btn-ams mt-auto" id="btn-circle" disabled>Recortar</button>
+                </div>
+            </div>
 
-                    <button class="btn btn-ams mt-auto" id="btn-circle" disabled>Recortar y Descargar</button>
+            <!-- SECCIÓN 2: DOCUMENTOS PDF -->
+            <div class="section-header">
+                <h2><i class="fa-solid fa-file-pdf me-2"></i> Documentos PDF</h2>
+                <hr>
+            </div>
+            <div class="tool-grid">
+                
+                <!-- Unir PDF -->
+                <div class="tool-card" id="tool-merge">
+                    <div class="icon-box cyan"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3 class="h4 fw-bold">Unir Documentos</h3>
+                    <p class="text-muted small">Combina múltiples archivos PDF en un solo documento organizado y listo para enviar.</p>
+                    <div class="result-box"><b>Recibes:</b> 1 PDF unificado.</div>
+                    <label class="drop-zone">
+                        <i class="fa-solid fa-cloud-arrow-up text-cyan"></i>
+                        <div class="small fw-bold mt-1">Soltar PDFs aquí</div>
+                        <div class="small text-muted" id="merge-file-count">Ningún archivo</div>
+                        <input type="file" id="merge-input" accept="application/pdf" multiple>
+                    </label>
+                    <button class="btn btn-ams mt-auto" id="btn-merge" disabled>Unir Archivos</button>
                 </div>
 
-                <!-- 4. IMAGEN A PDF -->
+                <!-- Imágenes a PDF -->
                 <div class="tool-card" id="tool-img2pdf">
                     <div class="icon-box purple"><i class="fa-regular fa-image"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Imágenes a PDF</h3>
-                    <p class="text-muted small mb-3">Convierte fotos, capturas o recibos en un archivo PDF estandarizado y profesional.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 PDF donde cada hoja es una foto.</div>
+                    <h3 class="h4 fw-bold">Imágenes a PDF</h3>
+                    <p class="text-muted small">Convierte fotos o recibos en un archivo PDF estandarizado (una foto por hoja).</p>
+                    <div class="result-box"><b>Recibes:</b> 1 PDF fotográfico.</div>
                     <label class="drop-zone">
-                        <i class="fa-regular fa-images fs-4 mb-2 text-purple"></i>
-                        <div class="small fw-bold">Soltar fotos</div>
-                        <div class="small text-muted mt-1" id="img-file-count">Ningún archivo</div>
+                        <i class="fa-regular fa-images text-purple"></i>
+                        <div class="small fw-bold mt-1">Soltar fotos</div>
+                        <div class="small text-muted" id="img-file-count">Ningún archivo</div>
                         <input type="file" id="img-input" accept="image/jpeg, image/png" multiple>
                     </label>
-                    <button class="btn btn-ams" id="btn-img" disabled>Generar PDF</button>
+                    <button class="btn btn-ams mt-auto" id="btn-img" disabled>Generar PDF</button>
                 </div>
 
-                <!-- 5. PDF A IMAGEN -->
-                <div class="tool-card" id="tool-pdf2img">
-                    <div class="icon-box red"><i class="fa-solid fa-file-image"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Extraer Fotos de PDF</h3>
-                    <p class="text-muted small mb-3">Desglosa un documento PDF separando cada una de sus páginas en imágenes de alta resolución.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> Archivo ZIP con las imágenes sueltas.</div>
-                    <label class="drop-zone">
-                        <i class="fa-solid fa-file-pdf fs-4 mb-2 text-danger"></i>
-                        <div class="small text-truncate px-2" id="pdf2img-file-name">Seleccionar PDF</div>
-                        <input type="file" id="pdf2img-input" accept="application/pdf">
-                    </label>
-                    <button class="btn btn-ams" id="btn-pdf2img" disabled>Extraer Fotos</button>
-                </div>
-
-                <!-- 6. COMPRESOR DE IMÁGENES -->
-                <div class="tool-card" id="tool-compress">
-                    <div class="icon-box orange"><i class="fa-solid fa-minimize"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Comprimir Imágenes</h3>
-                    <p class="text-muted small mb-3">Reduce drásticamente el tamaño (MB) de tus fotografías pesadas sin perder calidad visual notable.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> Imágenes optimizadas y ligeras.</div>
-                    <label class="drop-zone">
-                        <i class="fa-solid fa-weight-hanging fs-4 mb-2 text-warning"></i>
-                        <div class="small fw-bold">Soltar fotos pesadas</div>
-                        <div class="small text-muted mt-1" id="compress-file-count">Ningún archivo</div>
-                        <input type="file" id="compress-input" accept="image/jpeg, image/png" multiple>
-                    </label>
-                    <button class="btn btn-ams" id="btn-compress" disabled>Reducir Peso</button>
-                </div>
-
-                <!-- 7. EXTRAER PÁGINAS -->
+                <!-- Extraer Páginas -->
                 <div class="tool-card" id="tool-split">
                     <div class="icon-box cyan"><i class="fa-solid fa-scissors"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Extraer Páginas de PDF</h3>
-                    <p class="text-muted small mb-3">Rescata únicamente las hojas específicas que necesitas de un archivo PDF muy extenso.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 PDF nuevo solo con las hojas elegidas.</div>
+                    <h3 class="h4 fw-bold">Extraer Páginas</h3>
+                    <p class="text-muted small">Rescata únicamente las hojas específicas que necesitas de un archivo PDF muy extenso.</p>
+                    <div class="result-box"><b>Recibes:</b> PDF solo con hojas elegidas.</div>
                     <label class="drop-zone">
-                        <i class="fa-solid fa-file-pdf fs-4 mb-2 text-cyan"></i>
-                        <div class="small text-truncate px-2" id="split-file-name">Seleccionar PDF</div>
+                        <i class="fa-solid fa-file-pdf text-cyan"></i>
+                        <div class="small fw-bold mt-1 text-truncate px-1" id="split-file-name">Seleccionar PDF</div>
                         <input type="file" id="split-input" accept="application/pdf">
                     </label>
-                    <input type="text" class="form-control form-control-sm text-center" id="split-ranges" placeholder="Ej: 1, 3, 5-8" disabled>
-                    <button class="btn btn-ams" id="btn-split" disabled>Extraer Selección</button>
+                    <input type="text" class="form-control text-center mb-2" id="split-ranges" placeholder="Ej: 1, 3, 5-8" disabled>
+                    <button class="btn btn-ams mt-auto" id="btn-split" disabled>Extraer</button>
                 </div>
 
-                <!-- 8. BORRAR PÁGINAS -->
+                <!-- Extraer Fotos de PDF -->
+                <div class="tool-card" id="tool-pdf2img">
+                    <div class="icon-box red"><i class="fa-solid fa-file-image"></i></div>
+                    <h3 class="h4 fw-bold">Extraer Fotos</h3>
+                    <p class="text-muted small">Desglosa un documento PDF separando cada una de sus páginas en imágenes.</p>
+                    <div class="result-box"><b>Recibes:</b> ZIP con imágenes sueltas.</div>
+                    <label class="drop-zone">
+                        <i class="fa-solid fa-file-pdf text-danger"></i>
+                        <div class="small fw-bold mt-1 text-truncate px-1" id="pdf2img-file-name">Seleccionar PDF</div>
+                        <input type="file" id="pdf2img-input" accept="application/pdf">
+                    </label>
+                    <button class="btn btn-ams mt-auto" id="btn-pdf2img" disabled>Extraer Fotos</button>
+                </div>
+
+                <!-- Borrar Páginas -->
                 <div class="tool-card" id="tool-remove">
                     <div class="icon-box pink"><i class="fa-solid fa-trash-can-arrow-up"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Borrar Páginas de PDF</h3>
-                    <p class="text-muted small mb-3">Elimina definitivamente hojas en blanco, dañadas o confidenciales antes de compartir un archivo.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 PDF limpio, sin las hojas borradas.</div>
+                    <h3 class="h4 fw-bold">Borrar Páginas</h3>
+                    <p class="text-muted small">Elimina definitivamente hojas en blanco o confidenciales de un archivo.</p>
+                    <div class="result-box"><b>Recibes:</b> PDF limpio.</div>
                     <label class="drop-zone">
-                        <i class="fa-solid fa-file-pdf fs-4 mb-2 text-pink-ams"></i>
-                        <div class="small text-truncate px-2" id="remove-file-name">Seleccionar PDF</div>
+                        <i class="fa-solid fa-file-pdf text-pink-ams"></i>
+                        <div class="small fw-bold mt-1 text-truncate px-1" id="remove-file-name">Seleccionar PDF</div>
                         <input type="file" id="remove-input" accept="application/pdf">
                     </label>
-                    <input type="text" class="form-control form-control-sm text-center" id="remove-ranges" placeholder="Ej: 2, 4-6" disabled>
-                    <button class="btn btn-ams" id="btn-remove" disabled>Eliminar Hojas</button>
+                    <input type="text" class="form-control text-center mb-2" id="remove-ranges" placeholder="Ej: 2, 4-6" disabled>
+                    <button class="btn btn-ams mt-auto" id="btn-remove" disabled>Eliminar Hojas</button>
                 </div>
 
-                <!-- 9. ROTAR PDF -->
+                <!-- Girar PDF -->
                 <div class="tool-card" id="tool-rotate">
                     <div class="icon-box yellow"><i class="fa-solid fa-arrows-rotate"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Girar Documento</h3>
-                    <p class="text-muted small mb-3">Corrige la orientation de documentos o fotos que fueron escaneados al revés o de lado.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 PDF orientado correctamente.</div>
-                    <label class="drop-zone py-2">
-                        <i class="fa-solid fa-file-pdf fs-5 mb-1 text-warning"></i>
-                        <div class="small text-truncate px-2" id="rotate-file-name">Seleccionar PDF</div>
+                    <h3 class="h4 fw-bold">Girar Documento</h3>
+                    <p class="text-muted small">Corrige la orientación de documentos que fueron escaneados al revés o de lado.</p>
+                    <div class="result-box"><b>Recibes:</b> PDF orientado.</div>
+                    <label class="drop-zone">
+                        <i class="fa-solid fa-file-pdf text-warning"></i>
+                        <div class="small fw-bold mt-1 text-truncate px-1" id="rotate-file-name">Seleccionar PDF</div>
                         <input type="file" id="rotate-input" accept="application/pdf">
                     </label>
-                    <select class="form-select form-select-sm text-center mb-2" id="rotate-angle" disabled>
-                        <option value="90">Girar a la Derecha (+90°)</option>
-                        <option value="180">Poner de Cabeza (180°)</option>
-                        <option value="270">Girar a la Izquierda (-90°)</option>
+                    <select class="form-select text-center mb-2" id="rotate-angle" disabled>
+                        <option value="90">Derecha (+90°)</option>
+                        <option value="180">De Cabeza (180°)</option>
+                        <option value="270">Izquierda (-90°)</option>
                     </select>
-                    <button class="btn btn-ams" id="btn-rotate" disabled>Aplicar Rotación</button>
+                    <button class="btn btn-ams mt-auto" id="btn-rotate" disabled>Aplicar Giro</button>
                 </div>
 
-                <!-- 10. MARCA DE AGUA -->
+                <!-- Marca de Agua -->
                 <div class="tool-card" id="tool-watermark">
                     <div class="icon-box blue"><i class="fa-solid fa-fingerprint"></i></div>
-                    <h3 class="h4 fw-bold mb-2">Marca de Agua</h3>
-                    <p class="text-muted small mb-3">Protege la propiedad de tu documento agregando un texto diagonal semitransparente.</p>
-                    <div class="result-box"><i class="fa-solid fa-box-open me-1 text-cyan"></i> <b>Recibes:</b> 1 PDF sellado visualmente.</div>
-                    <label class="drop-zone py-2">
-                        <i class="fa-solid fa-shield-halved fs-5 mb-1 text-primary"></i>
-                        <div class="small text-truncate px-2" id="watermark-file-name">Seleccionar PDF</div>
+                    <h3 class="h4 fw-bold">Marca de Agua</h3>
+                    <p class="text-muted small">Protege la propiedad de tu documento agregando un texto diagonal personalizable.</p>
+                    <div class="result-box"><b>Recibes:</b> PDF sellado.</div>
+                    <label class="drop-zone mb-2">
+                        <i class="fa-solid fa-shield-halved text-primary"></i>
+                        <div class="small fw-bold mt-1 text-truncate px-1" id="watermark-file-name">Seleccionar PDF</div>
                         <input type="file" id="watermark-input" accept="application/pdf">
                     </label>
-                    <input type="text" class="form-control form-control-sm text-center mb-2" id="watermark-text" placeholder="Ej: CONFIDENCIAL" disabled>
-                    <button class="btn btn-ams" id="btn-watermark" disabled>Sellar Documento</button>
+                    <div class="micro-options mb-2">
+                        <input type="text" class="form-control text-center mb-2" id="watermark-text" placeholder="Ej: CONFIDENCIAL" disabled>
+                        <div class="d-flex gap-2">
+                            <input type="color" class="form-control-color border-0 rounded w-25" id="watermark-color" value="#4a4a4a" disabled title="Color">
+                            <input type="range" class="form-range flex-grow-1 mt-1" id="watermark-opacity" min="0.1" max="1" step="0.1" value="0.3" disabled title="Transparencia">
+                        </div>
+                    </div>
+                    <button class="btn btn-ams mt-auto" id="btn-watermark" disabled>Sellar</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: UTILIDADES Y CÓDIGO -->
+            <div class="section-header">
+                <h2><i class="fa-solid fa-microchip me-2"></i> Utilidades y Código</h2>
+                <hr>
+            </div>
+            <div class="tool-grid">
+                
+                <!-- Generador QR -->
+                <div class="tool-card" id="tool-qr">
+                    <div class="icon-box green"><i class="fa-solid fa-qrcode"></i></div>
+                    <h3 class="h4 fw-bold">Generador QR</h3>
+                    <p class="text-muted small">Convierte cualquier texto o enlace en un código QR escaneable listo para compartir.</p>
+                    
+                    <textarea class="form-control mb-2" id="qr-input-text" rows="2" placeholder="Escribe tu enlace aquí..."></textarea>
+                    
+                    <div id="qr-result-container" class="text-center bg-white p-2 rounded mb-2" style="display: none;">
+                        <div id="qr-canvas" class="d-flex justify-content-center"></div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-auto">
+                        <button class="btn btn-ams w-100" id="btn-gen-qr">Generar</button>
+                        <button class="btn btn-outline-light w-100" id="btn-dl-qr" style="display: none; padding: 10px; font-size: 0.8rem; font-weight: bold;">Descargar</button>
+                    </div>
+                </div>
+
+                <!-- Generador de Contraseñas -->
+                <div class="tool-card" id="tool-pass">
+                    <div class="icon-box cyan"><i class="fa-solid fa-key"></i></div>
+                    <h3 class="h4 fw-bold">Contraseñas</h3>
+                    <p class="text-muted small">Crea contraseñas ultraseguras generadas localmente en tu dispositivo.</p>
+                    
+                    <div class="result-box text-center fs-6 py-2 mb-2 d-flex justify-content-between align-items-center" style="letter-spacing: 1px;">
+                        <span id="pass-output" class="text-white text-truncate">AMS-Pass!</span>
+                        <button class="btn btn-sm btn-outline-info ms-2 py-0 px-2" id="btn-copy-pass"><i class="fa-regular fa-copy"></i></button>
+                    </div>
+
+                    <div class="micro-options mb-2">
+                        <label class="form-label d-flex justify-content-between mb-0">Longitud: <span id="pass-len-val">16</span></label>
+                        <input type="range" class="form-range mb-2" id="pass-length" min="8" max="32" value="16">
+                        <div class="d-flex justify-content-between">
+                            <div class="form-check d-flex align-items-center p-0"><input type="checkbox" id="pass-upper" checked class="m-0"><label class="text-muted small ms-1 mb-0">A-Z</label></div>
+                            <div class="form-check d-flex align-items-center p-0"><input type="checkbox" id="pass-num" checked class="m-0"><label class="text-muted small ms-1 mb-0">0-9</label></div>
+                            <div class="form-check d-flex align-items-center p-0"><input type="checkbox" id="pass-sym" checked class="m-0"><label class="text-muted small ms-1 mb-0">@#$</label></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-ams mt-auto" id="btn-gen-pass">Generar Clave</button>
+                </div>
+
+                <!-- Formateador JSON -->
+                <div class="tool-card" id="tool-json">
+                    <!-- ÍCONO CORREGIDO PARA LA VERSIÓN FREE DE FONTAWESOME -->
+                    <div class="icon-box purple"><i class="fa-solid fa-file-code"></i></div>
+                    <h3 class="h4 fw-bold">Formateador JSON</h3>
+                    <p class="text-muted small">Pega un código JSON desordenado y organízalo con indentación perfecta (estilo VS Code).</p>
+                    
+                    <textarea class="form-control mb-2" id="json-input" rows="3" placeholder='{"ejemplo": "pega aquí"}'></textarea>
+                    
+                    <div class="d-flex gap-2 mb-2">
+                        <button class="btn btn-ams w-100" id="btn-format-json">Formatear</button>
+                        <button class="btn btn-outline-danger w-100" id="btn-minify-json" style="display:none; padding: 10px; font-size: 0.8rem; font-weight: bold;">Minificar</button>
+                    </div>
+
+                    <div id="json-output-container" style="display:none;">
+                        <label class="form-label d-flex justify-content-between">Resultado: <button class="btn btn-sm btn-link text-info p-0 text-decoration-none" id="btn-copy-json">Copiar</button></label>
+                        <textarea class="form-control bg-dark text-success" id="json-output" rows="3" readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Minificador de Código -->
+                <div class="tool-card" id="tool-minify">
+                    <!-- ÍCONO CORREGIDO (Zipper) PARA NO REPETIR -->
+                    <div class="icon-box yellow"><i class="fa-solid fa-file-zipper"></i></div>
+                    <h3 class="h4 fw-bold">Minificador Código</h3>
+                    <p class="text-muted small">Sube archivos HTML, CSS o JS para eliminar espacios y comentarios. Acelera tu web.</p>
+                    <div class="result-box"><b>Recibes:</b> Archivo .min más ligero.</div>
+                    
+                    <label class="drop-zone">
+                        <i class="fa-solid fa-file-code text-warning"></i>
+                        <div class="small fw-bold mt-1 px-1 text-truncate" id="mini-file-name">Soltar archivo web</div>
+                        <input type="file" id="mini-input" accept=".html,.css,.js">
+                    </label>
+
+                    <button class="btn btn-ams mt-auto" id="btn-minify" disabled>Minificar</button>
                 </div>
 
             </div>
-        </section>
+        </div>
     </main>
 
     <!-- FOOTER PROMOCIONAL & COPYRIGHT -->
     <footer class="mt-auto w-100">
-        <div class="py-5 text-center" style="background: rgba(5,8,16,0.9); border-top: 1px solid var(--border-glass);">
+        <div class="py-4 text-center" style="background: rgba(5,8,16,0.9); border-top: 1px solid var(--border-glass);">
             <div class="container">
-                <h4 class="fw-bold mb-2" style="font-family: 'Space Grotesk', sans-serif;">Arquitectura Digital a Medida</h4>
-                <p class="text-muted mb-4 small">¿Necesitas automatizar procesos corporativos complejos para tu empresa?</p>
+                <h4 class="fw-bold mb-1" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem;">Arquitectura Digital a Medida</h4>
+                <p class="text-muted mb-3 small">¿Necesitas automatizar procesos complejos para tu empresa?</p>
                 <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light rounded-pill px-4 btn-sm">
                     Conoce nuestros servicios <i class="fa-solid fa-arrow-right ms-2"></i>
                 </a>
             </div>
         </div>
         <div class="text-center py-3" style="background: #020408; border-top: 1px solid rgba(255,255,255,0.02);">
-            <div class="container text-muted small">
+            <div class="container text-muted small" style="font-size: 0.75rem;">
                 &copy; <span id="current-year"></span> Avila Mora Soluciones. Todos los derechos reservados.
             </div>
         </div>
@@ -372,12 +509,10 @@
 
     <!-- LÓGICA JAVASCRIPT -->
     <script>
-        // Actualizar año del footer automáticamente
         document.getElementById('current-year').textContent = new Date().getFullYear();
-
         const { PDFDocument, rgb, degrees } = PDFLib;
 
-        // DRAG & DROP UI
+        // DRAG & DROP UI GLOBAL
         document.querySelectorAll('.drop-zone').forEach(zone => {
             const input = zone.querySelector('input[type="file"]');
             zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
@@ -388,19 +523,6 @@
             });
         });
 
-        // UTILIDADES
-        function parseRanges(str) {
-            const pages = new Set();
-            for (let part of str.split(',')) {
-                part = part.trim();
-                if (part.includes('-')) {
-                    const [start, end] = part.split('-').map(Number);
-                    if (start && end && start <= end) for (let i = start; i <= end; i++) pages.add(i);
-                } else if (Number(part)) pages.add(Number(part));
-            }
-            return Array.from(pages).sort((a, b) => a - b);
-        }
-
         function downloadFile(byteData, fileName, mimeType = 'application/pdf') {
             const blob = new Blob([byteData], { type: mimeType });
             const url = URL.createObjectURL(blob);
@@ -409,109 +531,27 @@
         }
 
         // ==========================================
-        // 3. RECORTE CIRCULAR INTERACTIVO (CROPPER.JS)
+        // SECCIÓN 1: MULTIMEDIA E IMÁGENES
         // ==========================================
-        let cropperInstance = null;
-        const circInp = document.getElementById('circle-input');
-        const circBtn = document.getElementById('btn-circle');
-        const cropperContainer = document.getElementById('cropper-container');
-        const cropperImage = document.getElementById('cropper-image');
-        const dropZoneCirc = document.getElementById('drop-zone-circ');
-        const btnCancelCrop = document.getElementById('btn-cancel-crop');
-
-        circInp.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    dropZoneCirc.style.display = 'none';
-                    cropperContainer.style.display = 'block';
-                    cropperImage.src = event.target.result;
-                    
-                    if(cropperInstance) cropperInstance.destroy();
-                    
-                    cropperInstance = new Cropper(cropperImage, {
-                        aspectRatio: 1, 
-                        viewMode: 1,
-                        dragMode: 'move',
-                        background: false,
-                        autoCropArea: 0.8
-                    });
-                    circBtn.disabled = false;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        btnCancelCrop.addEventListener('click', () => {
-            if(cropperInstance) cropperInstance.destroy();
-            cropperContainer.style.display = 'none';
-            dropZoneCirc.style.display = 'block';
-            circBtn.disabled = true;
-            circInp.value = '';
-        });
-
-        circBtn.addEventListener('click', () => {
-            if(!cropperInstance) return;
-            circBtn.innerHTML = 'Procesando... <i class="fa-solid fa-spinner fa-spin ms-1"></i>';
-            
-            const canvas = cropperInstance.getCroppedCanvas();
-            const circCanvas = document.createElement('canvas');
-            circCanvas.width = canvas.width;
-            circCanvas.height = canvas.height;
-            const ctx = circCanvas.getContext('2d');
-            
-            ctx.beginPath();
-            ctx.arc(canvas.width/2, canvas.height/2, canvas.width/2, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.clip();
-            ctx.drawImage(canvas, 0, 0);
-            
-            circCanvas.toBlob((blob) => {
-                downloadFile(blob, 'AMS_Circular.png', 'image/png');
-                circBtn.innerHTML = 'Recortar y Descargar';
-            }, 'image/png');
-        });
-
-        // ==========================================
-        // RESTO DE HERRAMIENTAS
-        // ==========================================
-
-        // 2. CONVERTIR A WEBP
-        const webpInp = document.getElementById('webp-input'), webpBtn = document.getElementById('btn-webp');
-        webpInp.addEventListener('change', () => { document.getElementById('webp-file-count').textContent = webpInp.files.length ? `${webpInp.files.length} fotos` : 'Ningún archivo'; webpBtn.disabled = !webpInp.files.length; });
-        webpBtn.addEventListener('click', async () => {
-            webpBtn.innerHTML = 'Convirtiendo... <i class="fa-solid fa-spinner fa-spin ms-1"></i>';
-            try {
-                const zip = new JSZip();
-                for (let file of webpInp.files) {
-                    const img = await createImageBitmap(file);
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width; canvas.height = img.height;
-                    canvas.getContext('2d').drawImage(img, 0, 0);
-                    const blob = await new Promise(res => canvas.toBlob(res, 'image/webp', 0.85)); 
-                    zip.file(file.name.replace(/\.[^/.]+$/, "") + ".webp", blob);
-                }
-                downloadFile(await zip.generateAsync({type: 'blob'}), 'AMS_WebP_Convertidos.zip', 'application/zip');
-            } catch(e) { alert('Error al convertir imágenes'); } finally { webpBtn.innerHTML = 'Convertir Lote'; }
-        });
-
-        // 6. COMPRESOR DE IMÁGENES
+        
+        // Compresor Imágenes
         const compInp = document.getElementById('compress-input'), compBtn = document.getElementById('btn-compress');
-        compInp.addEventListener('change', () => { document.getElementById('compress-file-count').textContent = compInp.files.length ? `${compInp.files.length} fotos` : 'Ningún archivo'; compBtn.disabled = !compInp.files.length; });
+        const compQuality = document.getElementById('comp-quality'), compVal = document.getElementById('comp-val');
+        compQuality.addEventListener('input', (e) => compVal.textContent = Math.round(e.target.value * 100) + '%');
+        compInp.addEventListener('change', () => { 
+            const count = compInp.files.length; document.getElementById('compress-file-count').textContent = count ? `${count} fotos` : 'Ningún archivo'; 
+            compBtn.disabled = compQuality.disabled = !count; 
+        });
         compBtn.addEventListener('click', async () => {
-            compBtn.innerHTML = 'Comprimiendo... <i class="fa-solid fa-spinner fa-spin ms-1"></i>';
+            compBtn.innerHTML = 'Comprimiendo...';
             try {
-                const zip = new JSZip();
-                const isMultiple = compInp.files.length > 1;
+                const zip = new JSZip(), isMultiple = compInp.files.length > 1, q = parseFloat(compQuality.value);
                 for (let file of compInp.files) {
-                    const img = await createImageBitmap(file);
-                    const canvas = document.createElement('canvas');
+                    const img = await createImageBitmap(file), canvas = document.createElement('canvas');
                     let width = img.width, height = img.height;
                     if (width > 1920 || height > 1920) { const ratio = Math.min(1920/width, 1920/height); width *= ratio; height *= ratio; }
-                    canvas.width = width; canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.60)); 
+                    canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', q)); 
                     const newName = file.name.replace(/\.[^/.]+$/, "") + "_AMS_Comprimida.jpg";
                     if (isMultiple) zip.file(newName, blob); else downloadFile(blob, newName, 'image/jpeg');
                 }
@@ -519,23 +559,71 @@
             } catch(e) { alert('Error al comprimir'); } finally { compBtn.innerHTML = 'Reducir Peso'; }
         });
 
-        // 1. UNIR PDF
+        // Conversor Imágenes
+        const convInp = document.getElementById('conv-input'), convBtn = document.getElementById('btn-conv');
+        const convFormat = document.getElementById('conv-format'), convQuality = document.getElementById('conv-quality'), convVal = document.getElementById('conv-val');
+        convQuality.addEventListener('input', (e) => convVal.textContent = Math.round(e.target.value * 100) + '%');
+        convInp.addEventListener('change', () => { 
+            const count = convInp.files.length; document.getElementById('conv-file-count').textContent = count ? `${count} fotos` : 'Ningún archivo'; 
+            convBtn.disabled = convFormat.disabled = convQuality.disabled = !count; 
+        });
+        convBtn.addEventListener('click', async () => {
+            convBtn.innerHTML = 'Convirtiendo...';
+            try {
+                const zip = new JSZip(), targetFormat = convFormat.value, extMap = { 'image/webp': '.webp', 'image/jpeg': '.jpg', 'image/png': '.png' };
+                const extension = extMap[targetFormat], quality = parseFloat(convQuality.value), isMultiple = convInp.files.length > 1;
+                for (let file of convInp.files) {
+                    const img = await createImageBitmap(file), canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0);
+                    const blob = await new Promise(res => canvas.toBlob(res, targetFormat, quality)); 
+                    const newName = file.name.replace(/\.[^/.]+$/, "") + extension;
+                    if(isMultiple) zip.file(newName, blob); else downloadFile(blob, newName, targetFormat);
+                }
+                if(isMultiple) downloadFile(await zip.generateAsync({type: 'blob'}), 'AMS_Conversiones.zip', 'application/zip');
+            } catch(e) { alert('Error al convertir'); } finally { convBtn.innerHTML = 'Convertir'; }
+        });
+
+        // Recorte Circular
+        let cropperInstance = null;
+        const circInp = document.getElementById('circle-input'), circBtn = document.getElementById('btn-circle');
+        const cropperContainer = document.getElementById('cropper-container'), cropperImage = document.getElementById('cropper-image');
+        const dropZoneCirc = document.getElementById('drop-zone-circ'), btnCancelCrop = document.getElementById('btn-cancel-crop');
+        circInp.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    dropZoneCirc.style.display = 'none'; cropperContainer.style.display = 'block'; cropperImage.src = event.target.result;
+                    if(cropperInstance) cropperInstance.destroy();
+                    cropperInstance = new Cropper(cropperImage, { aspectRatio: 1, viewMode: 1, dragMode: 'move', background: false, autoCropArea: 0.8 });
+                    circBtn.disabled = false;
+                }; reader.readAsDataURL(file);
+            }
+        });
+        btnCancelCrop.addEventListener('click', () => { if(cropperInstance) cropperInstance.destroy(); cropperContainer.style.display = 'none'; dropZoneCirc.style.display = 'block'; circBtn.disabled = true; circInp.value = ''; });
+        circBtn.addEventListener('click', () => {
+            if(!cropperInstance) return; circBtn.innerHTML = 'Procesando...';
+            const canvas = cropperInstance.getCroppedCanvas(), circCanvas = document.createElement('canvas');
+            circCanvas.width = canvas.width; circCanvas.height = canvas.height; const ctx = circCanvas.getContext('2d');
+            ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, canvas.width/2, 0, Math.PI * 2); ctx.closePath(); ctx.clip(); ctx.drawImage(canvas, 0, 0);
+            circCanvas.toBlob((blob) => { downloadFile(blob, 'AMS_Circular.png', 'image/png'); circBtn.innerHTML = 'Recortar'; }, 'image/png');
+        });
+
+        // ==========================================
+        // SECCIÓN 2: DOCUMENTOS PDF
+        // ==========================================
+        
         const mInp = document.getElementById('merge-input'), mBtn = document.getElementById('btn-merge');
         mInp.addEventListener('change', () => { document.getElementById('merge-file-count').textContent = mInp.files.length ? `${mInp.files.length} archivos` : 'Ningún archivo'; mBtn.disabled = !mInp.files.length; });
         mBtn.addEventListener('click', async () => {
             mBtn.innerHTML = 'Procesando...';
             try {
                 const doc = await PDFDocument.create();
-                for (let f of mInp.files) {
-                    const pdf = await PDFDocument.load(await f.arrayBuffer());
-                    const pages = await doc.copyPages(pdf, pdf.getPageIndices());
-                    pages.forEach(p => doc.addPage(p));
-                }
+                for (let f of mInp.files) { const pdf = await PDFDocument.load(await f.arrayBuffer()); const pages = await doc.copyPages(pdf, pdf.getPageIndices()); pages.forEach(p => doc.addPage(p)); }
                 downloadFile(await doc.save(), 'AMS_Unidos.pdf');
             } catch(e) { alert('Error al unir'); } finally { mBtn.innerHTML = 'Unir Archivos'; }
         });
 
-        // 4. IMAGEN A PDF
         const iInp = document.getElementById('img-input'), iBtn = document.getElementById('btn-img');
         iInp.addEventListener('change', () => { document.getElementById('img-file-count').textContent = iInp.files.length ? `${iInp.files.length} fotos` : 'Ningún archivo'; iBtn.disabled = !iInp.files.length; });
         iBtn.addEventListener('click', async () => {
@@ -543,51 +631,47 @@
             try {
                 const doc = await PDFDocument.create();
                 for (let f of iInp.files) {
-                    const bytes = await f.arrayBuffer();
-                    let img = f.type === 'image/jpeg' ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
-                    if(img) {
-                        const page = doc.addPage([img.width, img.height]);
-                        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
-                    }
+                    const bytes = await f.arrayBuffer(); let img = f.type === 'image/jpeg' ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
+                    if(img) { const page = doc.addPage([img.width, img.height]); page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height }); }
                 }
                 downloadFile(await doc.save(), 'AMS_Fotos_a_PDF.pdf');
             } catch(e) { alert('Error'); } finally { iBtn.innerHTML = 'Generar PDF'; }
         });
 
-        // 5. PDF A IMAGEN
         const p2iInp = document.getElementById('pdf2img-input'), p2iBtn = document.getElementById('btn-pdf2img');
         p2iInp.addEventListener('change', () => { document.getElementById('pdf2img-file-name').textContent = p2iInp.files[0] ? p2iInp.files[0].name : 'Seleccionar PDF'; p2iBtn.disabled = !p2iInp.files[0]; });
         p2iBtn.addEventListener('click', async () => {
-            p2iBtn.innerHTML = 'Procesando... <i class="fa-solid fa-spinner fa-spin ms-1"></i>';
+            p2iBtn.innerHTML = 'Procesando...';
             try {
-                const file = p2iInp.files[0];
-                const pdf = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise;
-                const zip = new JSZip(); 
+                const file = p2iInp.files[0]; const pdf = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise; const zip = new JSZip(); 
                 for(let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const viewport = page.getViewport({scale: 2.0}); 
-                    const canvas = document.createElement('canvas');
+                    const page = await pdf.getPage(i); const viewport = page.getViewport({scale: 2.0}); const canvas = document.createElement('canvas');
                     canvas.width = viewport.width; canvas.height = viewport.height;
                     await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
                     zip.file(`pagina_${i}.png`, await new Promise(res => canvas.toBlob(res, 'image/png')));
                 }
                 downloadFile(await zip.generateAsync({type: 'blob'}), file.name.replace('.pdf', '_AMS_Fotos.zip'), 'application/zip');
-            } catch(e) { alert('Error al convertir'); } finally { p2iBtn.innerHTML = 'Extraer Fotos'; }
+            } catch(e) { alert('Error al extraer'); } finally { p2iBtn.innerHTML = 'Extraer Fotos'; }
         });
 
-        // 7. EXTRAER Y 8. BORRAR
+        function parsePdfRanges(str) {
+            const pages = new Set();
+            for (let part of str.split(',')) {
+                part = part.trim();
+                if (part.includes('-')) { const [start, end] = part.split('-').map(Number); if (start && end && start <= end) for (let i = start; i <= end; i++) pages.add(i); } 
+                else if (Number(part)) pages.add(Number(part));
+            } return Array.from(pages).sort((a, b) => a - b);
+        }
+
         const sInp = document.getElementById('split-input'), sRng = document.getElementById('split-ranges'), sBtn = document.getElementById('btn-split');
         sInp.addEventListener('change', () => { document.getElementById('split-file-name').textContent = sInp.files[0] ? sInp.files[0].name : 'Seleccionar PDF'; sRng.disabled = sBtn.disabled = !sInp.files[0]; });
         sBtn.addEventListener('click', async () => {
             sBtn.innerHTML = 'Procesando...';
             try {
-                const toExt = parseRanges(sRng.value).map(p=>p-1);
-                const src = await PDFDocument.load(await sInp.files[0].arrayBuffer());
-                const doc = await PDFDocument.create();
-                const pages = await doc.copyPages(src, toExt.filter(p => p>=0 && p<src.getPageCount()));
-                pages.forEach(p => doc.addPage(p));
+                const toExt = parsePdfRanges(sRng.value).map(p=>p-1); const src = await PDFDocument.load(await sInp.files[0].arrayBuffer()); const doc = await PDFDocument.create();
+                const pages = await doc.copyPages(src, toExt.filter(p => p>=0 && p<src.getPageCount())); pages.forEach(p => doc.addPage(p));
                 downloadFile(await doc.save(), 'AMS_Extraido.pdf');
-            } catch(e) { alert('Error'); } finally { sBtn.innerHTML = 'Extraer Selección'; }
+            } catch(e) { alert('Error'); } finally { sBtn.innerHTML = 'Extraer'; }
         });
 
         const rInp = document.getElementById('remove-input'), rRng = document.getElementById('remove-ranges'), rBtn = document.getElementById('btn-remove');
@@ -595,17 +679,13 @@
         rBtn.addEventListener('click', async () => {
             rBtn.innerHTML = 'Procesando...';
             try {
-                const toRemove = parseRanges(rRng.value).map(p=>p-1);
-                const src = await PDFDocument.load(await rInp.files[0].arrayBuffer());
-                const doc = await PDFDocument.create();
+                const toRemove = parsePdfRanges(rRng.value).map(p=>p-1); const src = await PDFDocument.load(await rInp.files[0].arrayBuffer()); const doc = await PDFDocument.create();
                 const toKeep = Array.from({length: src.getPageCount()}, (_, i) => i).filter(i => !toRemove.includes(i));
-                const pages = await doc.copyPages(src, toKeep);
-                pages.forEach(p => doc.addPage(p));
+                const pages = await doc.copyPages(src, toKeep); pages.forEach(p => doc.addPage(p));
                 downloadFile(await doc.save(), 'AMS_Limpio.pdf');
             } catch(e) { alert('Error'); } finally { rBtn.innerHTML = 'Eliminar Hojas'; }
         });
 
-        // 9. ROTAR Y 10. MARCA DE AGUA
         const rotInp = document.getElementById('rotate-input'), rotAng = document.getElementById('rotate-angle'), rotBtn = document.getElementById('btn-rotate');
         rotInp.addEventListener('change', () => { document.getElementById('rotate-file-name').textContent = rotInp.files[0] ? rotInp.files[0].name : 'Seleccionar PDF'; rotAng.disabled = rotBtn.disabled = !rotInp.files[0]; });
         rotBtn.addEventListener('click', async () => {
@@ -614,22 +694,83 @@
                 const doc = await PDFDocument.load(await rotInp.files[0].arrayBuffer());
                 doc.getPages().forEach(p => p.setRotation(degrees(parseInt(rotAng.value))));
                 downloadFile(await doc.save(), 'AMS_Girado.pdf');
-            } catch(e) { alert('Error'); } finally { rotBtn.innerHTML = 'Aplicar Rotación'; }
+            } catch(e) { alert('Error'); } finally { rotBtn.innerHTML = 'Aplicar Giro'; }
         });
 
         const wInp = document.getElementById('watermark-input'), wTxt = document.getElementById('watermark-text'), wBtn = document.getElementById('btn-watermark');
-        wInp.addEventListener('change', () => { document.getElementById('watermark-file-name').textContent = wInp.files[0] ? wInp.files[0].name : 'Seleccionar PDF'; wTxt.disabled = wBtn.disabled = !wInp.files[0]; });
+        const wColor = document.getElementById('watermark-color'), wOpacity = document.getElementById('watermark-opacity');
+        wInp.addEventListener('change', () => { 
+            const hasFile = wInp.files.length > 0; document.getElementById('watermark-file-name').textContent = hasFile ? wInp.files[0].name : 'Seleccionar PDF'; 
+            wTxt.disabled = wBtn.disabled = wColor.disabled = wOpacity.disabled = !hasFile; 
+        });
+        function hexToRgb(hex) { const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? { r: parseInt(result[1], 16)/255, g: parseInt(result[2], 16)/255, b: parseInt(result[3], 16)/255 } : { r: 0, g: 0, b: 0 }; }
         wBtn.addEventListener('click', async () => {
             wBtn.innerHTML = 'Procesando...';
             try {
-                const doc = await PDFDocument.load(await wInp.files[0].arrayBuffer());
-                const text = wTxt.value.trim() || "AMS PROTECTED";
-                doc.getPages().forEach(p => {
-                    const { width, height } = p.getSize();
-                    p.drawText(text, { x: width/4, y: height/2, size: 50, color: rgb(0.3,0.3,0.3), opacity: 0.2, rotate: degrees(45) });
-                });
+                const doc = await PDFDocument.load(await wInp.files[0].arrayBuffer()); const text = wTxt.value.trim() || "AMS PROTECTED";
+                const c = hexToRgb(wColor.value), op = parseFloat(wOpacity.value);
+                doc.getPages().forEach(p => { const { width, height } = p.getSize(); p.drawText(text, { x: width/4, y: height/2, size: 50, color: rgb(c.r, c.g, c.b), opacity: op, rotate: degrees(45) }); });
                 downloadFile(await doc.save(), 'AMS_Sellado.pdf');
-            } catch(e) { alert('Error'); } finally { wBtn.innerHTML = 'Sellar Documento'; }
+            } catch(e) { alert('Error'); } finally { wBtn.innerHTML = 'Sellar'; }
+        });
+
+        // ==========================================
+        // SECCIÓN 3: UTILIDADES Y CÓDIGO
+        // ==========================================
+
+        // Generador QR
+        const qrInp = document.getElementById('qr-input-text'), btnGenQr = document.getElementById('btn-gen-qr'), btnDlQr = document.getElementById('btn-dl-qr');
+        const qrCanvas = document.getElementById('qr-canvas'), qrContainer = document.getElementById('qr-result-container');
+        let qrcode = null;
+        btnGenQr.addEventListener('click', () => {
+            const text = qrInp.value.trim(); if(!text) return alert("Ingresa texto o enlace.");
+            qrContainer.style.display = 'block'; qrCanvas.innerHTML = '';
+            qrcode = new QRCode(qrCanvas, { text: text, width: 160, height: 160, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+            btnDlQr.style.display = 'block';
+        });
+        btnDlQr.addEventListener('click', () => { const cvs = qrCanvas.querySelector('canvas'); if(cvs) cvs.toBlob(blob => downloadFile(blob, 'AMS_QRCode.png', 'image/png')); });
+
+        // Generador Contraseñas
+        const passLen = document.getElementById('pass-length'), passLenVal = document.getElementById('pass-len-val');
+        const passUp = document.getElementById('pass-upper'), passNum = document.getElementById('pass-num'), passSym = document.getElementById('pass-sym');
+        const passOut = document.getElementById('pass-output'), btnGenPass = document.getElementById('btn-gen-pass'), btnCopyPass = document.getElementById('btn-copy-pass');
+        passLen.addEventListener('input', (e) => passLenVal.textContent = e.target.value);
+        function generatePass() {
+            const lower = 'abcdefghijklmnopqrstuvwxyz', upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', numbers = '0123456789', symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+            let chars = lower; if(passUp.checked) chars += upper; if(passNum.checked) chars += numbers; if(passSym.checked) chars += symbols;
+            let pass = ''; for(let i = 0; i < passLen.value; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length)); passOut.textContent = pass;
+        }
+        btnGenPass.addEventListener('click', generatePass);
+        btnCopyPass.addEventListener('click', () => {
+            navigator.clipboard.writeText(passOut.textContent);
+            const icon = btnCopyPass.querySelector('i'); icon.className = 'fa-solid fa-check text-success'; setTimeout(() => icon.className = 'fa-regular fa-copy', 2000);
+        });
+        generatePass();
+
+        // Formateador JSON
+        const jsonInp = document.getElementById('json-input'), jsonOut = document.getElementById('json-output');
+        const btnFormatJson = document.getElementById('btn-format-json'), btnMinifyJson = document.getElementById('btn-minify-json'), btnCopyJson = document.getElementById('btn-copy-json');
+        const jsonOutCont = document.getElementById('json-output-container');
+        btnFormatJson.addEventListener('click', () => {
+            try { const parsed = JSON.parse(jsonInp.value); jsonOut.value = JSON.stringify(parsed, null, 4); jsonOutCont.style.display = 'block'; btnMinifyJson.style.display = 'inline-block';
+            btnFormatJson.textContent = 'Exitoso'; setTimeout(() => btnFormatJson.textContent = 'Formatear', 2000); } catch(e) { alert("JSON Inválido."); }
+        });
+        btnMinifyJson.addEventListener('click', () => { try { jsonOut.value = JSON.stringify(JSON.parse(jsonInp.value)); } catch(e) {} });
+        btnCopyJson.addEventListener('click', () => { navigator.clipboard.writeText(jsonOut.value); btnCopyJson.textContent = '¡Copiado!'; setTimeout(() => btnCopyJson.textContent = 'Copiar', 2000); });
+
+        // Minificador de Código
+        const miniInp = document.getElementById('mini-input'), miniBtn = document.getElementById('btn-minify');
+        miniInp.addEventListener('change', () => { const f = miniInp.files[0]; document.getElementById('mini-file-name').textContent = f ? f.name : 'Soltar archivo web'; miniBtn.disabled = !f; });
+        miniBtn.addEventListener('click', async () => {
+            miniBtn.innerHTML = 'Procesando...';
+            try {
+                const file = miniInp.files[0]; const text = await file.text(); const ext = file.name.split('.').pop().toLowerCase(); let minified = text;
+                if (ext === 'css') minified = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([\{\}\:\;\,])\s*/g, '$1');
+                else if (ext === 'html') minified = text.replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ').replace(/>\s+</g, '><');
+                else if (ext === 'js') minified = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '').replace(/\n+/g, '\n').replace(/\s{2,}/g, ' ');
+                else { alert('Sube HTML, CSS o JS.'); return; }
+                const blob = new Blob([minified], { type: 'text/plain' }); downloadFile(blob, file.name.replace(`.${ext}`, `.min.${ext}`), 'text/plain');
+            } catch(e) { alert('Error.'); } finally { miniBtn.innerHTML = 'Minificar'; }
         });
 
     </script>
