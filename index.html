@@ -235,14 +235,14 @@
                 <div class="tool-card" id="tool-img-conv">
                     <div class="icon-box green"><i class="fa-solid fa-shuffle"></i></div>
                     <h3 class="h4 fw-bold">Convertir Formatos</h3>
-                    <p class="text-muted small">Transforma fotos a JPG, PNG o WebP. Ideal para compatibilidad o páginas web.</p>
+                    <p class="text-muted small">Transforma fotos a JPG, PNG, WebP, AVIF o ICO. Ideal para compatibilidad o páginas web.</p>
                     <div class="result-box"><b>Recibes:</b> ZIP con fotos en el nuevo formato.</div>
                     
                     <label class="drop-zone">
                         <i class="fa-regular fa-images text-success"></i>
                         <div class="small fw-bold mt-1">Soltar imágenes</div>
                         <div class="small text-muted" id="conv-file-count">Ningún archivo</div>
-                        <input type="file" id="conv-input" accept="image/jpeg, image/png, image/webp" multiple>
+                        <input type="file" id="conv-input" accept="image/jpeg, image/png, image/webp, image/avif, image/x-icon, .ico" multiple>
                     </label>
                     
                     <div class="micro-options">
@@ -250,6 +250,8 @@
                             <option value="image/webp">A WebP (Recomendado)</option>
                             <option value="image/jpeg">A JPG</option>
                             <option value="image/png">A PNG</option>
+                            <option value="image/avif">A AVIF</option>
+                            <option value="image/x-icon">A ICO</option>
                         </select>
                         <label class="form-label d-flex justify-content-between mb-0">Calidad: <span id="conv-val">85%</span></label>
                         <input type="range" class="form-range" id="conv-quality" min="0.1" max="1" step="0.05" value="0.85" disabled>
@@ -570,7 +572,7 @@
         convBtn.addEventListener('click', async () => {
             convBtn.innerHTML = 'Convirtiendo...';
             try {
-                const zip = new JSZip(), targetFormat = convFormat.value, extMap = { 'image/webp': '.webp', 'image/jpeg': '.jpg', 'image/png': '.png' };
+                const zip = new JSZip(), targetFormat = convFormat.value, extMap = { 'image/webp': '.webp', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/avif': '.avif', 'image/x-icon': '.ico' };
                 const extension = extMap[targetFormat], quality = parseFloat(convQuality.value), isMultiple = convInp.files.length > 1;
                 for (let file of convInp.files) {
                     const img = await createImageBitmap(file), canvas = document.createElement('canvas');
