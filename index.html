@@ -141,6 +141,10 @@
         .btn-ams:hover { filter: brightness(1.1); transform: scale(1.02); }
         .btn-ams:disabled { background: #1E293B; color: #64748B !important; cursor: not-allowed; transform: none; filter: none; }
 
+        .form-check-input { width: 1.5em; height: 1.5em; margin-top: 0; }
+        .form-check-input:checked { background-color: var(--cyan); border-color: var(--cyan); }
+        .form-check-label { font-size: 0.8rem !important; margin-left: 5px; margin-top: 2px;}
+
         /* CROPPER JS */
         .cropper-view-box, .cropper-face { border-radius: 50%; }
         .cropper-container { margin-bottom: 10px; }
@@ -148,15 +152,54 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- NAVEGACIÓN (Se mantiene igual) -->
+    <!-- NAVEGACIÓN -->
     <nav class="navbar navbar-dark navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="#">
+            <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="https://avilamorasoluciones.github.io/ams" target="_blank">
                 <span class="brand-logo">AMS Tools</span> 
                 <span class="fw-bold d-none d-sm-inline text-white" style="font-family: 'Space Grotesk', sans-serif;">Avila Mora Soluciones</span>
             </a>
+            
+            <button class="navbar-toggler shadow-none border-0 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuHerramientas" aria-controls="menuHerramientas">
+                <span class="navbar-toggler-icon" style="width: 1.2em; height: 1.2em;"></span>
+            </button>
         </div>
     </nav>
+
+    <!-- MENÚ OFFCANVAS -->
+    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="menuHerramientas" aria-labelledby="menuHerramientasLabel">
+        <div class="offcanvas-header border-bottom border-secondary py-3">
+            <h5 class="offcanvas-title fw-bold" id="menuHerramientasLabel" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem;">Nuestras Herramientas</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" style="overflow-y: auto;">
+            
+            <p class="text-muted small mb-2 fw-bold" style="font-size: 0.75rem;">📸 MULTIMEDIA E IMÁGENES</p>
+            <a href="#tool-compress" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-orange-ams"><i class="fa-solid fa-minimize"></i></div> Comprimir Imágenes</a>
+            <a href="#tool-conv" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-green-ams"><i class="fa-solid fa-shuffle"></i></div> Convertir Formatos</a>
+            <a href="#tool-circle" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-crop-simple"></i></div> Recorte Circular</a>
+            
+            <p class="text-muted small mt-4 mb-2 fw-bold" style="font-size: 0.75rem;">📄 DOCUMENTOS PDF</p>
+            <a href="#tool-merge" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-layer-group"></i></div> Unir Documentos</a>
+            <a href="#tool-img2pdf" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-regular fa-image"></i></div> Imágenes a PDF</a>
+            <a href="#tool-split" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-scissors"></i></div> Extraer Páginas</a>
+            <a href="#tool-pdf2img" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-red-ams"><i class="fa-solid fa-file-image"></i></div> Extraer Fotos de PDF</a>
+            <a href="#tool-remove" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-trash-can-arrow-up"></i></div> Borrar Páginas</a>
+            <a href="#tool-rotate" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-yellow-ams"><i class="fa-solid fa-arrows-rotate"></i></div> Girar Documento</a>
+            <a href="#tool-watermark" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-blue-ams"><i class="fa-solid fa-fingerprint"></i></div> Marca de Agua</a>
+
+            <p class="text-muted small mt-4 mb-2 fw-bold" style="font-size: 0.75rem;">🛠️ UTILIDADES Y CÓDIGO</p>
+            <a href="#tool-minify" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-yellow-ams"><i class="fa-solid fa-file-zipper"></i></div> Minificador de Código</a>
+            <a href="#tool-qr" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-green-ams"><i class="fa-solid fa-qrcode"></i></div> Generador QR</a>
+            <a href="#tool-pass" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-key"></i></div> Generador Contraseñas</a>
+            <a href="#tool-json" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-solid fa-file-code"></i></div> Formateador JSON</a>
+            
+            <hr class="border-secondary my-4">
+            <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light w-100 rounded-pill mb-4" style="font-size: 0.85rem; padding: 8px;">
+                <i class="fa-solid fa-globe me-2"></i> Web Principal AMS
+            </a>
+        </div>
+    </div>
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow-1 w-100">
@@ -185,14 +228,12 @@
                     <h3 class="h4 fw-bold">Comprimir Imágenes</h3>
                     <p class="text-muted small">Reduce el peso ajustando la calidad.</p>
                     
-                    <!-- Drop Zone -->
                     <label class="drop-zone" id="dz-compress">
                         <i class="fa-solid fa-weight-hanging text-warning"></i>
                         <div class="small fw-bold mt-1">Soltar fotos pesadas</div>
                         <input type="file" id="inp-compress" accept="image/jpeg, image/png" multiple>
                     </label>
 
-                    <!-- Workspace -->
                     <div class="workspace-container" id="ws-compress">
                         <div class="file-grid" id="grid-compress"></div>
                         <button class="btn btn-sm btn-outline-secondary mt-2 w-100" onclick="document.getElementById('inp-compress').click()">Añadir más fotos</button>
@@ -236,7 +277,7 @@
                     <button class="btn btn-ams mt-auto" id="btn-conv" disabled>Convertir</button>
                 </div>
 
-                <!-- Recorte Circular (Mantenido casi igual porque Cropper toma la UI) -->
+                <!-- Recorte Circular -->
                 <div class="tool-card" id="tool-circle">
                     <div class="icon-box pink"><i class="fa-solid fa-crop-simple"></i></div>
                     <h3 class="h4 fw-bold">Recorte Circular</h3>
@@ -399,7 +440,7 @@
             </div>
 
             <!-- ==========================================
-                 SECCIÓN 3: UTILIDADES (Sin Workspace)
+                 SECCIÓN 3: UTILIDADES Y CÓDIGO
                  ========================================== -->
             <div class="section-header">
                 <h2><i class="fa-solid fa-microchip me-2"></i> Utilidades y Código</h2>
@@ -423,15 +464,91 @@
                     <button class="btn btn-ams mt-auto" id="btn-minify" disabled>Minificar</button>
                 </div>
 
-                <!-- QR y Pass (Iguales) -->
-                <!-- ... Aquí van tus herramientas de QR, Contraseñas y JSON exactamente como las tenías ... -->
+                <!-- Generador QR -->
+                <div class="tool-card" id="tool-qr">
+                    <div class="icon-box green"><i class="fa-solid fa-qrcode"></i></div>
+                    <h3 class="h4 fw-bold">Generador QR</h3>
+                    <p class="text-muted small">Convierte cualquier texto o enlace en un código QR escaneable listo para compartir.</p>
+                    
+                    <textarea class="form-control mb-2" id="qr-input-text" rows="2" placeholder="Escribe tu enlace aquí..."></textarea>
+                    
+                    <div id="qr-result-container" class="text-center bg-white p-2 rounded mb-2" style="display: none;">
+                        <div id="qr-canvas" class="d-flex justify-content-center"></div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-auto">
+                        <button class="btn btn-ams w-100" id="btn-gen-qr">Generar</button>
+                        <button class="btn btn-outline-light w-100" id="btn-dl-qr" style="display: none; padding: 10px; font-size: 0.8rem; font-weight: bold;">Descargar</button>
+                    </div>
+                </div>
+
+                <!-- Generador de Contraseñas -->
+                <div class="tool-card" id="tool-pass">
+                    <div class="icon-box cyan"><i class="fa-solid fa-key"></i></div>
+                    <h3 class="h4 fw-bold">Contraseñas</h3>
+                    <p class="text-muted small">Crea contraseñas ultraseguras generadas localmente en tu dispositivo.</p>
+                    
+                    <div class="result-box text-center fs-6 py-2 mb-2 d-flex justify-content-between align-items-center" style="letter-spacing: 1px;">
+                        <span id="pass-output" class="text-white text-truncate">AMS-Pass!</span>
+                        <button class="btn btn-sm btn-outline-info ms-2 py-0 px-2" id="btn-copy-pass"><i class="fa-regular fa-copy"></i></button>
+                    </div>
+
+                    <div class="micro-options mb-2">
+                        <label class="form-label d-flex justify-content-between mb-0">Longitud: <span id="pass-len-val">16</span></label>
+                        <input type="range" class="form-range mb-2" id="pass-length" min="8" max="32" value="16">
+                        <div class="d-flex justify-content-between">
+                            <div class="form-check d-flex align-items-center p-0"><input type="checkbox" id="pass-upper" checked class="m-0"><label class="text-muted small ms-1 mb-0">A-Z</label></div>
+                            <div class="form-check d-flex align-items-center p-0"><input type="checkbox" id="pass-num" checked class="m-0"><label class="text-muted small ms-1 mb-0">0-9</label></div>
+                            <div class="form-check d-flex align-items-center p-0"><input type="checkbox" id="pass-sym" checked class="m-0"><label class="text-muted small ms-1 mb-0">@#$</label></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-ams mt-auto" id="btn-gen-pass">Generar Clave</button>
+                </div>
+
+                <!-- Formateador JSON -->
+                <div class="tool-card" id="tool-json">
+                    <div class="icon-box purple"><i class="fa-solid fa-file-code"></i></div>
+                    <h3 class="h4 fw-bold">Formateador JSON</h3>
+                    <p class="text-muted small">Pega un código JSON desordenado y organízalo con indentación perfecta.</p>
+                    
+                    <textarea class="form-control mb-2" id="json-input" rows="3" placeholder='{"ejemplo": "pega aquí"}'></textarea>
+                    
+                    <div class="d-flex gap-2 mb-2">
+                        <button class="btn btn-ams w-100" id="btn-format-json">Formatear</button>
+                        <button class="btn btn-outline-danger w-100" id="btn-minify-json" style="display:none; padding: 10px; font-size: 0.8rem; font-weight: bold;">Minificar</button>
+                    </div>
+
+                    <div id="json-output-container" style="display:none;">
+                        <label class="form-label d-flex justify-content-between">Resultado: <button class="btn btn-sm btn-link text-info p-0 text-decoration-none" id="btn-copy-json">Copiar</button></label>
+                        <textarea class="form-control bg-dark text-success" id="json-output" rows="3" readonly></textarea>
+                    </div>
+                </div>
                 
             </div>
         </div>
     </main>
 
-    <!-- LÓGICA JAVASCRIPT GESTOR GLOBAL -->
+    <!-- FOOTER PROMOCIONAL & COPYRIGHT -->
+    <footer class="mt-auto w-100">
+        <div class="py-4 text-center" style="background: rgba(5,8,16,0.9); border-top: 1px solid var(--border-glass);">
+            <div class="container">
+                <h4 class="fw-bold mb-1" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem;">Arquitectura Digital a Medida</h4>
+                <p class="text-muted mb-3 small">¿Necesitas automatizar procesos complejos para tu empresa?</p>
+                <a href="https://avilamorasoluciones.github.io/ams" target="_blank" class="btn btn-outline-light rounded-pill px-4 btn-sm">
+                    Conoce nuestros servicios <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+        <div class="text-center py-3" style="background: #020408; border-top: 1px solid rgba(255,255,255,0.02);">
+            <div class="container text-muted small" style="font-size: 0.75rem;">
+                &copy; <span id="current-year"></span> Avila Mora Soluciones. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
     <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
         const { PDFDocument, rgb, degrees } = PDFLib;
 
         // Utilidad global: Descargar
@@ -457,7 +574,7 @@
             constructor(toolId, isMultiple = true, extraConfig = {}) {
                 this.filesArray = [];
                 this.isMultiple = isMultiple;
-                this.extraConfig = extraConfig; // { showSize: bool, fileIcon: string, controlsToToggle: array }
+                this.extraConfig = extraConfig; 
                 
                 this.inp = document.getElementById(`inp-${toolId}`);
                 this.dz = document.getElementById(`dz-${toolId}`);
@@ -465,22 +582,23 @@
                 this.grid = document.getElementById(`grid-${toolId}`);
                 this.actionBtn = document.getElementById(`btn-${toolId}`);
                 
-                // Drag and drop events on DropZone
-                this.dz.addEventListener('dragover', e => { e.preventDefault(); this.dz.classList.add('dragover'); });
-                ['dragleave', 'dragend'].forEach(t => this.dz.addEventListener(t, () => this.dz.classList.remove('dragover')));
-                this.dz.addEventListener('drop', e => {
-                    e.preventDefault(); this.dz.classList.remove('dragover');
-                    if (e.dataTransfer.files.length) this.handleFiles(e.dataTransfer.files);
-                });
+                if(this.dz) {
+                    this.dz.addEventListener('dragover', e => { e.preventDefault(); this.dz.classList.add('dragover'); });
+                    ['dragleave', 'dragend'].forEach(t => this.dz.addEventListener(t, () => this.dz.classList.remove('dragover')));
+                    this.dz.addEventListener('drop', e => {
+                        e.preventDefault(); this.dz.classList.remove('dragover');
+                        if (e.dataTransfer.files.length) this.handleFiles(e.dataTransfer.files);
+                    });
+                }
 
-                // Input change
-                this.inp.addEventListener('change', (e) => {
-                    if (e.target.files.length) this.handleFiles(e.target.files);
-                    this.inp.value = ''; // Reset
-                });
+                if(this.inp) {
+                    this.inp.addEventListener('change', (e) => {
+                        if (e.target.files.length) this.handleFiles(e.target.files);
+                        this.inp.value = ''; 
+                    });
+                }
 
-                // Sortable (Solo si es múltiple)
-                if (this.isMultiple) {
+                if (this.isMultiple && this.grid) {
                     new Sortable(this.grid, {
                         animation: 150,
                         ghostClass: 'bg-secondary',
@@ -494,7 +612,7 @@
 
             handleFiles(fileList) {
                 if (!this.isMultiple) {
-                    this.filesArray = [fileList[0]]; // Reemplaza si es único
+                    this.filesArray = [fileList[0]]; 
                 } else {
                     Array.from(fileList).forEach(f => this.filesArray.push(f));
                 }
@@ -507,18 +625,16 @@
             }
 
             getFiles() { return this.filesArray; }
-            getFile() { return this.filesArray[0]; } // Para herramientas únicas
+            getFile() { return this.filesArray[0]; } 
 
             render() {
                 this.grid.innerHTML = '';
                 
-                // Toggle UI
                 const hasFiles = this.filesArray.length > 0;
                 this.ws.style.display = hasFiles ? 'block' : 'none';
-                this.dz.style.display = (hasFiles && !this.isMultiple) ? 'none' : 'block'; // Ocultar dz si es single file
+                this.dz.style.display = (hasFiles && !this.isMultiple) ? 'none' : 'block'; 
                 if (hasFiles && this.isMultiple) this.dz.style.display = 'none';
 
-                // Toggle Controls (Buttons, Inputs)
                 if(this.actionBtn) this.actionBtn.disabled = !hasFiles;
                 if(this.extraConfig.controlsToToggle) {
                     this.extraConfig.controlsToToggle.forEach(id => {
@@ -529,7 +645,6 @@
 
                 if (!hasFiles) return;
 
-                // Render Cards
                 const iconClass = this.extraConfig.fileIcon || 'fa-solid fa-file';
                 const showSize = this.extraConfig.showSize || false;
 
@@ -595,7 +710,50 @@
         const wsConv = new WorkspaceManager('conv', true, { instanceName: 'wsConv', fileIcon: 'fa-solid fa-shuffle text-success', controlsToToggle: ['conv-format', 'conv-quality'] });
         document.getElementById('conv-quality').addEventListener('input', e => document.getElementById('conv-val').textContent = Math.round(e.target.value * 100) + '%');
         
-        // ... (Agrega aquí la lógica del botón btn-conv usando wsConv.getFiles()) ...
+        document.getElementById('btn-conv').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-conv'); btn.innerHTML = 'Convirtiendo...';
+            try {
+                const zip = new JSZip(), targetFormat = document.getElementById('conv-format').value;
+                const extMap = { 'image/webp': '.webp', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/avif': '.avif', 'image/x-icon': '.ico' };
+                const extension = extMap[targetFormat], quality = parseFloat(document.getElementById('conv-quality').value);
+                const files = wsConv.getFiles(), isMultiple = files.length > 1;
+                
+                for (let file of files) {
+                    const img = await createImageBitmap(file), canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0);
+                    const blob = await new Promise(res => canvas.toBlob(res, targetFormat, quality)); 
+                    const newName = file.name.replace(/\.[^/.]+$/, "") + extension;
+                    if(isMultiple) zip.file(newName, blob); else downloadFile(blob, newName, targetFormat);
+                }
+                if(isMultiple) downloadFile(await zip.generateAsync({type: 'blob'}), 'AMS_Conversiones.zip', 'application/zip');
+            } catch(e) { alert('Error al convertir'); } finally { btn.innerHTML = 'Convertir'; }
+        });
+
+        // 3. Recorte Circular
+        let cropperInstance = null;
+        const circInp = document.getElementById('circle-input'), circBtn = document.getElementById('btn-circle');
+        const cropperContainer = document.getElementById('cropper-container'), cropperImage = document.getElementById('cropper-image');
+        const dropZoneCirc = document.getElementById('drop-zone-circ'), btnCancelCrop = document.getElementById('btn-cancel-crop');
+        circInp.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    dropZoneCirc.style.display = 'none'; cropperContainer.style.display = 'block'; cropperImage.src = event.target.result;
+                    if(cropperInstance) cropperInstance.destroy();
+                    cropperInstance = new Cropper(cropperImage, { aspectRatio: 1, viewMode: 1, dragMode: 'move', background: false, autoCropArea: 0.8 });
+                    circBtn.disabled = false;
+                }; reader.readAsDataURL(file);
+            }
+        });
+        btnCancelCrop.addEventListener('click', () => { if(cropperInstance) cropperInstance.destroy(); cropperContainer.style.display = 'none'; dropZoneCirc.style.display = 'block'; circBtn.disabled = true; circInp.value = ''; });
+        circBtn.addEventListener('click', () => {
+            if(!cropperInstance) return; circBtn.innerHTML = 'Procesando...';
+            const canvas = cropperInstance.getCroppedCanvas(), circCanvas = document.createElement('canvas');
+            circCanvas.width = canvas.width; circCanvas.height = canvas.height; const ctx = circCanvas.getContext('2d');
+            ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, canvas.width/2, 0, Math.PI * 2); ctx.closePath(); ctx.clip(); ctx.drawImage(canvas, 0, 0);
+            circCanvas.toBlob((blob) => { downloadFile(blob, 'AMS_Circular.png', 'image/png'); circBtn.innerHTML = 'Recortar'; }, 'image/png');
+        });
 
         // 4. Unir PDF
         const wsMerge = new WorkspaceManager('merge', true, { instanceName: 'wsMerge', fileIcon: 'fa-solid fa-file-pdf text-cyan' });
@@ -608,30 +766,160 @@
             } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Unir Archivos'; }
         });
 
-        // 5. Imágenes a PDF
+        // 5. Imágenes a PDF (CON SOPORTE PARA JPG Y PNG)
         const wsImg2Pdf = new WorkspaceManager('img2pdf', true, { instanceName: 'wsImg2Pdf', fileIcon: 'fa-regular fa-image text-purple' });
-        
+        document.getElementById('btn-img2pdf').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-img2pdf'); btn.innerHTML = 'Generando...';
+            try {
+                const doc = await PDFDocument.create();
+                const files = wsImg2Pdf.getFiles();
+                for (let f of files) {
+                    const bytes = await f.arrayBuffer();
+                    let img;
+                    const isJpg = f.type === 'image/jpeg' || f.name.toLowerCase().endsWith('.jpg') || f.name.toLowerCase().endsWith('.jpeg');
+                    const isPng = f.type === 'image/png' || f.name.toLowerCase().endsWith('.png');
+
+                    if (isJpg) { img = await doc.embedJpg(bytes); } 
+                    else if (isPng) { img = await doc.embedPng(bytes); } 
+                    else { alert(`El archivo ${f.name} no es un formato soportado.`); continue; }
+                    
+                    if (img) { const page = doc.addPage([img.width, img.height]); page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height }); }
+                }
+                downloadFile(await doc.save(), 'AMS_Fotos_a_PDF.pdf');
+            } catch(e) { console.error(e); alert('Error al convertir imágenes.'); } finally { btn.innerHTML = 'Generar PDF'; }
+        });
+
+        function parsePdfRanges(str) {
+            const pages = new Set();
+            for (let part of str.split(',')) {
+                part = part.trim();
+                if (part.includes('-')) { const [start, end] = part.split('-').map(Number); if (start && end && start <= end) for (let i = start; i <= end; i++) pages.add(i); } 
+                else if (Number(part)) pages.add(Number(part));
+            } return Array.from(pages).sort((a, b) => a - b);
+        }
+
         // 6. Extraer Páginas (SINGLE FILE)
         const wsSplit = new WorkspaceManager('split', false, { instanceName: 'wsSplit', fileIcon: 'fa-solid fa-file-pdf text-cyan', controlsToToggle: ['split-ranges'] });
-        
+        document.getElementById('btn-split').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-split'); btn.innerHTML = 'Procesando...';
+            try {
+                const file = wsSplit.getFile(), rng = document.getElementById('split-ranges').value;
+                const toExt = parsePdfRanges(rng).map(p=>p-1); 
+                const src = await PDFDocument.load(await file.arrayBuffer()); const doc = await PDFDocument.create();
+                const pages = await doc.copyPages(src, toExt.filter(p => p>=0 && p<src.getPageCount())); pages.forEach(p => doc.addPage(p));
+                downloadFile(await doc.save(), 'AMS_Extraido.pdf');
+            } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Extraer'; }
+        });
+
         // 7. PDF a Imágenes (SINGLE FILE)
         const wsPdf2Img = new WorkspaceManager('pdf2img', false, { instanceName: 'wsPdf2Img', fileIcon: 'fa-solid fa-file-pdf text-danger' });
+        document.getElementById('btn-pdf2img').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-pdf2img'); btn.innerHTML = 'Procesando...';
+            try {
+                const file = wsPdf2Img.getFile(); const pdf = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise; const zip = new JSZip(); 
+                for(let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i); const viewport = page.getViewport({scale: 2.0}); const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width; canvas.height = viewport.height;
+                    await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
+                    zip.file(`pagina_${i}.png`, await new Promise(res => canvas.toBlob(res, 'image/png')));
+                }
+                downloadFile(await zip.generateAsync({type: 'blob'}), file.name.replace('.pdf', '_AMS_Fotos.zip'), 'application/zip');
+            } catch(e) { alert('Error al extraer'); } finally { btn.innerHTML = 'Extraer Fotos'; }
+        });
 
         // 8. Borrar Páginas (SINGLE FILE)
         const wsRemove = new WorkspaceManager('remove', false, { instanceName: 'wsRemove', fileIcon: 'fa-solid fa-file-pdf text-pink-ams', controlsToToggle: ['remove-ranges'] });
+        document.getElementById('btn-remove').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-remove'); btn.innerHTML = 'Procesando...';
+            try {
+                const file = wsRemove.getFile(), rng = document.getElementById('remove-ranges').value;
+                const toRemove = parsePdfRanges(rng).map(p=>p-1); 
+                const src = await PDFDocument.load(await file.arrayBuffer()); const doc = await PDFDocument.create();
+                const toKeep = Array.from({length: src.getPageCount()}, (_, i) => i).filter(i => !toRemove.includes(i));
+                const pages = await doc.copyPages(src, toKeep); pages.forEach(p => doc.addPage(p));
+                downloadFile(await doc.save(), 'AMS_Limpio.pdf');
+            } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Eliminar Hojas'; }
+        });
 
         // 9. Girar PDF (SINGLE FILE)
         const wsRotate = new WorkspaceManager('rotate', false, { instanceName: 'wsRotate', fileIcon: 'fa-solid fa-file-pdf text-warning', controlsToToggle: ['rotate-angle'] });
+        document.getElementById('btn-rotate').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-rotate'); btn.innerHTML = 'Procesando...';
+            try {
+                const doc = await PDFDocument.load(await wsRotate.getFile().arrayBuffer()), ang = document.getElementById('rotate-angle').value;
+                doc.getPages().forEach(p => p.setRotation(degrees(parseInt(ang))));
+                downloadFile(await doc.save(), 'AMS_Girado.pdf');
+            } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Aplicar Giro'; }
+        });
 
         // 10. Marca de Agua (SINGLE FILE)
         const wsWatermark = new WorkspaceManager('watermark', false, { instanceName: 'wsWatermark', fileIcon: 'fa-solid fa-file-pdf text-primary', controlsToToggle: ['watermark-text', 'watermark-color', 'watermark-opacity'] });
+        function hexToRgb(hex) { const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? { r: parseInt(result[1], 16)/255, g: parseInt(result[2], 16)/255, b: parseInt(result[3], 16)/255 } : { r: 0, g: 0, b: 0 }; }
+        document.getElementById('btn-watermark').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-watermark'); btn.innerHTML = 'Procesando...';
+            try {
+                const doc = await PDFDocument.load(await wsWatermark.getFile().arrayBuffer()); 
+                const text = document.getElementById('watermark-text').value.trim() || "AMS PROTECTED";
+                const c = hexToRgb(document.getElementById('watermark-color').value), op = parseFloat(document.getElementById('watermark-opacity').value);
+                doc.getPages().forEach(p => { const { width, height } = p.getSize(); p.drawText(text, { x: width/4, y: height/2, size: 50, color: rgb(c.r, c.g, c.b), opacity: op, rotate: degrees(45) }); });
+                downloadFile(await doc.save(), 'AMS_Sellado.pdf');
+            } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Sellar'; }
+        });
 
         // 11. Minificador (SINGLE FILE)
         const wsMinify = new WorkspaceManager('minify', false, { instanceName: 'wsMinify', fileIcon: 'fa-solid fa-file-code text-warning' });
+        document.getElementById('btn-minify').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-minify'); btn.innerHTML = 'Procesando...';
+            try {
+                const file = wsMinify.getFile(); const text = await file.text(); const ext = file.name.split('.').pop().toLowerCase(); let minified = text;
+                if (ext === 'css') minified = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([\{\}\:\;\,])\s*/g, '$1');
+                else if (ext === 'html') minified = text.replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ').replace(/>\s+</g, '><');
+                else if (ext === 'js') minified = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '').replace(/\n+/g, '\n').replace(/\s{2,}/g, ' ');
+                else { alert('Sube HTML, CSS o JS.'); return; }
+                const blob = new Blob([minified], { type: 'text/plain' }); downloadFile(blob, file.name.replace(`.${ext}`, `.min.${ext}`), 'text/plain');
+            } catch(e) { alert('Error.'); } finally { btn.innerHTML = 'Minificar'; }
+        });
 
-        // CIRCLE CROP LOGIC (Mantenido igual ya que no usa el Workspace grid)
-        // ...
-        
+        // 12. Generador QR
+        const qrInp = document.getElementById('qr-input-text'), btnGenQr = document.getElementById('btn-gen-qr'), btnDlQr = document.getElementById('btn-dl-qr');
+        const qrCanvas = document.getElementById('qr-canvas'), qrContainer = document.getElementById('qr-result-container');
+        let qrcode = null;
+        btnGenQr.addEventListener('click', () => {
+            const text = qrInp.value.trim(); if(!text) return alert("Ingresa texto o enlace.");
+            qrContainer.style.display = 'block'; qrCanvas.innerHTML = '';
+            qrcode = new QRCode(qrCanvas, { text: text, width: 160, height: 160, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+            btnDlQr.style.display = 'block';
+        });
+        btnDlQr.addEventListener('click', () => { const cvs = qrCanvas.querySelector('canvas'); if(cvs) cvs.toBlob(blob => downloadFile(blob, 'AMS_QRCode.png', 'image/png')); });
+
+        // 13. Generador Contraseñas
+        const passLen = document.getElementById('pass-length'), passLenVal = document.getElementById('pass-len-val');
+        const passUp = document.getElementById('pass-upper'), passNum = document.getElementById('pass-num'), passSym = document.getElementById('pass-sym');
+        const passOut = document.getElementById('pass-output'), btnGenPass = document.getElementById('btn-gen-pass'), btnCopyPass = document.getElementById('btn-copy-pass');
+        passLen.addEventListener('input', (e) => passLenVal.textContent = e.target.value);
+        function generatePass() {
+            const lower = 'abcdefghijklmnopqrstuvwxyz', upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', numbers = '0123456789', symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+            let chars = lower; if(passUp.checked) chars += upper; if(passNum.checked) chars += numbers; if(passSym.checked) chars += symbols;
+            let pass = ''; for(let i = 0; i < passLen.value; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length)); passOut.textContent = pass;
+        }
+        btnGenPass.addEventListener('click', generatePass);
+        btnCopyPass.addEventListener('click', () => {
+            navigator.clipboard.writeText(passOut.textContent);
+            const icon = btnCopyPass.querySelector('i'); icon.className = 'fa-solid fa-check text-success'; setTimeout(() => icon.className = 'fa-regular fa-copy', 2000);
+        });
+        generatePass();
+
+        // 14. Formateador JSON
+        const jsonInp = document.getElementById('json-input'), jsonOut = document.getElementById('json-output');
+        const btnFormatJson = document.getElementById('btn-format-json'), btnMinifyJson = document.getElementById('btn-minify-json'), btnCopyJson = document.getElementById('btn-copy-json');
+        const jsonOutCont = document.getElementById('json-output-container');
+        btnFormatJson.addEventListener('click', () => {
+            try { const parsed = JSON.parse(jsonInp.value); jsonOut.value = JSON.stringify(parsed, null, 4); jsonOutCont.style.display = 'block'; btnMinifyJson.style.display = 'inline-block';
+            btnFormatJson.textContent = 'Exitoso'; setTimeout(() => btnFormatJson.textContent = 'Formatear', 2000); } catch(e) { alert("JSON Inválido."); }
+        });
+        btnMinifyJson.addEventListener('click', () => { try { jsonOut.value = JSON.stringify(JSON.parse(jsonInp.value)); } catch(e) {} });
+        btnCopyJson.addEventListener('click', () => { navigator.clipboard.writeText(jsonOut.value); btnCopyJson.textContent = '¡Copiado!'; setTimeout(() => btnCopyJson.textContent = 'Copiar', 2000); });
+
     </script>
 </body>
 </html>
