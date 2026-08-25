@@ -115,7 +115,7 @@
         .file-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 8px; padding: 10px; width: calc(50% - 5px); text-align: center; cursor: grab; position: relative; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px;}
         .file-card:active { cursor: grabbing; }
         .file-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
-        .file-card.single-file { width: 100%; cursor: default; } /* Para herramientas de 1 solo archivo */
+        .file-card.single-file { width: 100%; cursor: default; } 
         
         .file-card .remove-btn { position: absolute; top: -6px; right: -6px; background: #EF4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 2;}
         .file-card i.file-icon { font-size: 1.8rem; color: var(--text-muted); margin-bottom: 5px; }
@@ -180,6 +180,8 @@
             <a href="#tool-circle" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-pink-ams"><i class="fa-solid fa-crop-simple"></i></div> Recorte Circular</a>
             
             <p class="text-muted small mt-4 mb-2 fw-bold" style="font-size: 0.75rem;">📄 DOCUMENTOS PDF</p>
+            <!-- NUEVA HERRAMIENTA EN EL MENÚ -->
+            <a href="#tool-compress-pdf" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-orange-ams"><i class="fa-solid fa-file-zipper"></i></div> Comprimir PDF</a>
             <a href="#tool-merge" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-layer-group"></i></div> Unir Documentos</a>
             <a href="#tool-img2pdf" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-purple-ams"><i class="fa-regular fa-image"></i></div> Imágenes a PDF</a>
             <a href="#tool-split" class="menu-link" data-bs-dismiss="offcanvas"><div class="menu-icon text-cyan-ams"><i class="fa-solid fa-scissors"></i></div> Extraer Páginas</a>
@@ -213,9 +215,7 @@
 
         <div class="container pb-5">
             
-            <!-- ==========================================
-                 SECCIÓN 1: MULTIMEDIA E IMÁGENES 
-                 ========================================== -->
+            <!-- SECCIÓN 1: MULTIMEDIA E IMÁGENES -->
             <div class="section-header">
                 <h2><i class="fa-solid fa-image me-2"></i> Multimedia e Imágenes</h2>
                 <hr>
@@ -297,15 +297,33 @@
                 </div>
             </div>
 
-            <!-- ==========================================
-                 SECCIÓN 2: DOCUMENTOS PDF
-                 ========================================== -->
+            <!-- SECCIÓN 2: DOCUMENTOS PDF -->
             <div class="section-header">
                 <h2><i class="fa-solid fa-file-pdf me-2"></i> Documentos PDF</h2>
                 <hr>
             </div>
             <div class="tool-grid">
                 
+                <!-- NUEVO: COMPRIMIR PDF -->
+                <div class="tool-card" id="tool-compress-pdf">
+                    <div class="icon-box orange"><i class="fa-solid fa-file-zipper"></i></div>
+                    <h3 class="h4 fw-bold">Comprimir PDF</h3>
+                    <p class="text-muted small">Reduce el peso del PDF (convierte páginas a imágenes optimizadas).</p>
+                    
+                    <label class="drop-zone" id="dz-compress-pdf">
+                        <i class="fa-solid fa-file-arrow-down text-warning"></i>
+                        <div class="small fw-bold mt-1">Seleccionar PDF pesado</div>
+                        <input type="file" id="inp-compress-pdf" accept="application/pdf">
+                    </label>
+                    <div class="workspace-container" id="ws-compress-pdf"><div class="file-grid" id="grid-compress-pdf"></div></div>
+
+                    <div class="micro-options mb-2">
+                        <label class="form-label d-flex justify-content-between mb-0">Nivel Calidad: <span id="pdf-comp-val">60%</span></label>
+                        <input type="range" class="form-range" id="pdf-comp-quality" min="0.1" max="1" step="0.1" value="0.6" disabled>
+                    </div>
+                    <button class="btn btn-ams mt-auto" id="btn-compress-pdf" disabled>Comprimir Archivo</button>
+                </div>
+
                 <!-- Unir PDF -->
                 <div class="tool-card" id="tool-merge">
                     <div class="icon-box cyan"><i class="fa-solid fa-layer-group"></i></div>
@@ -439,9 +457,7 @@
                 </div>
             </div>
 
-            <!-- ==========================================
-                 SECCIÓN 3: UTILIDADES Y CÓDIGO
-                 ========================================== -->
+            <!-- SECCIÓN 3: UTILIDADES Y CÓDIGO -->
             <div class="section-header">
                 <h2><i class="fa-solid fa-microchip me-2"></i> Utilidades y Código</h2>
                 <hr>
@@ -755,7 +771,63 @@
             circCanvas.toBlob((blob) => { downloadFile(blob, 'AMS_Circular.png', 'image/png'); circBtn.innerHTML = 'Recortar'; }, 'image/png');
         });
 
-        // 4. Unir PDF
+        // 4. NUEVA HERRAMIENTA: Comprimir PDF
+        const wsCompressPdf = new WorkspaceManager('compress-pdf', false, { instanceName: 'wsCompressPdf', fileIcon: 'fa-solid fa-file-zipper text-warning', controlsToToggle: ['pdf-comp-quality'] });
+        const pdfCompQuality = document.getElementById('pdf-comp-quality');
+        pdfCompQuality.addEventListener('input', e => document.getElementById('pdf-comp-val').textContent = Math.round(e.target.value * 100) + '%');
+
+        document.getElementById('btn-compress-pdf').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-compress-pdf'); 
+            btn.innerHTML = 'Comprimiendo... (Puede tardar)';
+            btn.disabled = true;
+
+            try {
+                const file = wsCompressPdf.getFile();
+                const quality = parseFloat(pdfCompQuality.value);
+                
+                // Lee el PDF con pdf.js
+                const fileArrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: fileArrayBuffer }).promise;
+                
+                // Crea un PDF nuevo con pdf-lib
+                const newPdf = await PDFDocument.create();
+
+                // Iterar páginas, rasterizar a JPEG y guardar en el nuevo PDF
+                for(let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    // Usamos escala 1.5. Es un buen balance para que el texto sea legible y el archivo ligero.
+                    const viewport = page.getViewport({scale: 1.5}); 
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width; 
+                    canvas.height = viewport.height;
+                    const ctx = canvas.getContext('2d');
+                    
+                    await page.render({canvasContext: ctx, viewport: viewport}).promise;
+
+                    // Comprime el canvas como JPEG
+                    const imgDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    
+                    // Incrustar en el nuevo PDF
+                    const img = await newPdf.embedJpg(imgDataUrl);
+                    const newPage = newPdf.addPage([viewport.width, viewport.height]);
+                    newPage.drawImage(img, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+                }
+                
+                // Guardar y descargar
+                const pdfBytes = await newPdf.save();
+                downloadFile(pdfBytes, file.name.replace('.pdf', '_AMS_Comprimido.pdf'), 'application/pdf');
+
+            } catch(error) { 
+                console.error(error); 
+                alert('Error al comprimir el PDF.'); 
+            } finally { 
+                btn.innerHTML = 'Comprimir Archivo';
+                btn.disabled = false;
+            }
+        });
+
+        // 5. Unir PDF
         const wsMerge = new WorkspaceManager('merge', true, { instanceName: 'wsMerge', fileIcon: 'fa-solid fa-file-pdf text-cyan' });
         document.getElementById('btn-merge').addEventListener('click', async () => {
             const btn = document.getElementById('btn-merge'); btn.innerHTML = 'Uniendo...';
@@ -766,7 +838,7 @@
             } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Unir Archivos'; }
         });
 
-        // 5. Imágenes a PDF (CON SOPORTE PARA JPG Y PNG)
+        // 6. Imágenes a PDF (CON SOPORTE PARA JPG Y PNG)
         const wsImg2Pdf = new WorkspaceManager('img2pdf', true, { instanceName: 'wsImg2Pdf', fileIcon: 'fa-regular fa-image text-purple' });
         document.getElementById('btn-img2pdf').addEventListener('click', async () => {
             const btn = document.getElementById('btn-img2pdf'); btn.innerHTML = 'Generando...';
@@ -798,7 +870,7 @@
             } return Array.from(pages).sort((a, b) => a - b);
         }
 
-        // 6. Extraer Páginas (SINGLE FILE)
+        // 7. Extraer Páginas (SINGLE FILE)
         const wsSplit = new WorkspaceManager('split', false, { instanceName: 'wsSplit', fileIcon: 'fa-solid fa-file-pdf text-cyan', controlsToToggle: ['split-ranges'] });
         document.getElementById('btn-split').addEventListener('click', async () => {
             const btn = document.getElementById('btn-split'); btn.innerHTML = 'Procesando...';
@@ -811,7 +883,7 @@
             } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Extraer'; }
         });
 
-        // 7. PDF a Imágenes (SINGLE FILE)
+        // 8. PDF a Imágenes (SINGLE FILE)
         const wsPdf2Img = new WorkspaceManager('pdf2img', false, { instanceName: 'wsPdf2Img', fileIcon: 'fa-solid fa-file-pdf text-danger' });
         document.getElementById('btn-pdf2img').addEventListener('click', async () => {
             const btn = document.getElementById('btn-pdf2img'); btn.innerHTML = 'Procesando...';
@@ -827,7 +899,7 @@
             } catch(e) { alert('Error al extraer'); } finally { btn.innerHTML = 'Extraer Fotos'; }
         });
 
-        // 8. Borrar Páginas (SINGLE FILE)
+        // 9. Borrar Páginas (SINGLE FILE)
         const wsRemove = new WorkspaceManager('remove', false, { instanceName: 'wsRemove', fileIcon: 'fa-solid fa-file-pdf text-pink-ams', controlsToToggle: ['remove-ranges'] });
         document.getElementById('btn-remove').addEventListener('click', async () => {
             const btn = document.getElementById('btn-remove'); btn.innerHTML = 'Procesando...';
@@ -841,7 +913,7 @@
             } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Eliminar Hojas'; }
         });
 
-        // 9. Girar PDF (SINGLE FILE)
+        // 10. Girar PDF (SINGLE FILE)
         const wsRotate = new WorkspaceManager('rotate', false, { instanceName: 'wsRotate', fileIcon: 'fa-solid fa-file-pdf text-warning', controlsToToggle: ['rotate-angle'] });
         document.getElementById('btn-rotate').addEventListener('click', async () => {
             const btn = document.getElementById('btn-rotate'); btn.innerHTML = 'Procesando...';
@@ -852,7 +924,7 @@
             } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Aplicar Giro'; }
         });
 
-        // 10. Marca de Agua (SINGLE FILE)
+        // 11. Marca de Agua (SINGLE FILE)
         const wsWatermark = new WorkspaceManager('watermark', false, { instanceName: 'wsWatermark', fileIcon: 'fa-solid fa-file-pdf text-primary', controlsToToggle: ['watermark-text', 'watermark-color', 'watermark-opacity'] });
         function hexToRgb(hex) { const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? { r: parseInt(result[1], 16)/255, g: parseInt(result[2], 16)/255, b: parseInt(result[3], 16)/255 } : { r: 0, g: 0, b: 0 }; }
         document.getElementById('btn-watermark').addEventListener('click', async () => {
@@ -866,7 +938,7 @@
             } catch(e) { alert('Error'); } finally { btn.innerHTML = 'Sellar'; }
         });
 
-        // 11. Minificador (SINGLE FILE)
+        // 12. Minificador (SINGLE FILE)
         const wsMinify = new WorkspaceManager('minify', false, { instanceName: 'wsMinify', fileIcon: 'fa-solid fa-file-code text-warning' });
         document.getElementById('btn-minify').addEventListener('click', async () => {
             const btn = document.getElementById('btn-minify'); btn.innerHTML = 'Procesando...';
@@ -880,7 +952,7 @@
             } catch(e) { alert('Error.'); } finally { btn.innerHTML = 'Minificar'; }
         });
 
-        // 12. Generador QR
+        // 13. Generador QR
         const qrInp = document.getElementById('qr-input-text'), btnGenQr = document.getElementById('btn-gen-qr'), btnDlQr = document.getElementById('btn-dl-qr');
         const qrCanvas = document.getElementById('qr-canvas'), qrContainer = document.getElementById('qr-result-container');
         let qrcode = null;
@@ -892,7 +964,7 @@
         });
         btnDlQr.addEventListener('click', () => { const cvs = qrCanvas.querySelector('canvas'); if(cvs) cvs.toBlob(blob => downloadFile(blob, 'AMS_QRCode.png', 'image/png')); });
 
-        // 13. Generador Contraseñas
+        // 14. Generador Contraseñas
         const passLen = document.getElementById('pass-length'), passLenVal = document.getElementById('pass-len-val');
         const passUp = document.getElementById('pass-upper'), passNum = document.getElementById('pass-num'), passSym = document.getElementById('pass-sym');
         const passOut = document.getElementById('pass-output'), btnGenPass = document.getElementById('btn-gen-pass'), btnCopyPass = document.getElementById('btn-copy-pass');
@@ -909,7 +981,7 @@
         });
         generatePass();
 
-        // 14. Formateador JSON
+        // 15. Formateador JSON
         const jsonInp = document.getElementById('json-input'), jsonOut = document.getElementById('json-output');
         const btnFormatJson = document.getElementById('btn-format-json'), btnMinifyJson = document.getElementById('btn-minify-json'), btnCopyJson = document.getElementById('btn-copy-json');
         const jsonOutCont = document.getElementById('json-output-container');
